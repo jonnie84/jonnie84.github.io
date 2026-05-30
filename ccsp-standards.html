@@ -12,9 +12,9 @@
     --card:      #141724;
     --card-alt:  #181b2c;
     --border:    #22263a;
-    --text:      #c0c5dc;
-    --dim:       #5a607a;
-    --title-col: #8a90b0;
+    --text:      #e8eaf5;
+    --dim:       #7880a0;
+    --title-col: #b8bdd4;
 
     --iso:    #4f8ef7;
     --nist:   #22c55e;
@@ -65,11 +65,22 @@
     font-weight: 300;
   }
   .site-header .tag {
-    margin-left: auto;
     font-size: 0.75rem;
     color: var(--dim);
     font-family: 'JetBrains Mono', monospace;
   }
+  .site-header .home-link {
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--dim);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .site-header .home-link:hover { color: var(--text); border-color: var(--title-col); }
 
   /* ── TOC ─────────────────────────────────────────────────── */
   .toc {
@@ -292,6 +303,7 @@
   <span class="logo">CCSP</span>
   <span class="subtitle">Standards &amp; Frameworks Reference</span>
   <span class="tag">All 6 Domains</span>
+  <a class="home-link" href="index.html">⌂ Home</a>
 </header>
 
 <nav class="toc">

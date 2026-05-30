@@ -12,8 +12,9 @@
     --card:     #141724;
     --card-alt: #181b2c;
     --border:   #22263a;
-    --text:     #c0c5dc;
-    --dim:      #5a607a;
+    --text:     #e8eaf5;
+    --muted:    #b8bdd4;
+    --dim:      #7880a0;
 
     --cbk:      #22c55e;
     --cbk-bg:   #052e16;
@@ -77,9 +78,20 @@
     margin-left: auto;
     display: flex;
     gap: 8px;
+    align-items: center;
   }
 
-  .ctrl-btn {
+  .home-link {
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #7880a0;
+    text-decoration: none;
+    border: 1px solid #22263a;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .home-link:hover { color: #e8eaf5; border-color: #b8bdd4; }
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
     padding: 4px 10px;
@@ -206,8 +218,8 @@
   .col-stripe  { width: 6px; }
   .col-port    { width: 70px; }
   .col-proto   { width: 100px; }
-  .col-service { width: 200px; }
-  .col-notes   { width: auto; }
+  .col-service { width: 180px; }
+  .col-notes   { width: calc(100% - 356px); }
 
   thead tr {
     background: #0f1220;
@@ -240,7 +252,6 @@
     font-weight: 700;
     font-size: 1rem;
     white-space: nowrap;
-    width: 1%;
   }
 
   .td-proto {
@@ -248,7 +259,6 @@
     font-size: 0.75rem;
     color: var(--dim);
     white-space: nowrap;
-    width: 1%;
   }
 
   .td-service {
@@ -308,6 +318,7 @@
   <div class="header-controls">
     <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
     <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
+    <a class="home-link" href="index.html">⌂ Home</a>
   </div>
 </header>
 
