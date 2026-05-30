@@ -65,26 +65,26 @@
     letter-spacing: 0.04em;
   }
   .ctrl-row {
+    margin-left: auto;
     display: flex;
     gap: 8px;
   }
   .ctrl-btn {
-    background: var(--border);
-    border: none;
-    color: var(--dim);
+    background: transparent;
+    border: 1px solid #22263a;
+    color: #7880a0;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    padding: 5px 10px;
-    border-radius: 4px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: color .15s, background .15s;
+    transition: color 0.15s, border-color 0.15s;
   }
-  .ctrl-btn:hover { background: #2a2f4a; color: var(--text); }
+  .ctrl-btn:hover { color: #e8eaf5; border-color: #b8bdd4; background: transparent; }
 
   .home-link {
-    margin-left: auto;
     font-size: 0.8rem;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     color: #7880a0;
     text-decoration: none;
     border: 1px solid #22263a;
@@ -338,10 +338,10 @@
 <header class="site-header">
   <span class="logo">CCSP</span>
   <span class="subtitle">FRAMEWORKS &amp; LIFECYCLES // ALL DOMAINS</span>
-  <a class="home-link" href="index.html">⌂ Home</a>
   <div class="ctrl-row">
     <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
     <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
+    <a class="home-link" href="index.html">⌂ Home</a>
   </div>
 </header>
 
