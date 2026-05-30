@@ -200,7 +200,14 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
+
+  .col-stripe  { width: 6px; }
+  .col-port    { width: 70px; }
+  .col-proto   { width: 100px; }
+  .col-service { width: 200px; }
+  .col-notes   { width: auto; }
 
   thead tr {
     background: #0f1220;
@@ -247,8 +254,6 @@
   .td-service {
     font-weight: 600;
     color: #dde2f0;
-    white-space: nowrap;
-    width: 1%;
   }
 
   .td-alias {
@@ -337,9 +342,12 @@
   </div>
   <div class="section-body">
     <table>
+      <colgroup>
+        <col class="col-stripe"><col class="col-port"><col class="col-proto"><col class="col-service"><col class="col-notes">
+      </colgroup>
       <thead>
         <tr>
-          <th style="width:6px;padding:0;"></th>
+          <th style="padding:0;"></th>
           <th>Port</th>
           <th>Transport</th>
           <th>Service</th>
@@ -445,9 +453,12 @@
   </div>
   <div class="section-body">
     <table>
+      <colgroup>
+        <col class="col-stripe"><col class="col-port"><col class="col-proto"><col class="col-service"><col class="col-notes">
+      </colgroup>
       <thead>
         <tr>
-          <th style="width:6px;padding:0;"></th>
+          <th style="padding:0;"></th>
           <th>Port</th>
           <th>Transport</th>
           <th>Service</th>
