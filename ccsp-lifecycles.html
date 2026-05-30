@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCSP Frameworks & Lifecycles</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #0d0f18;
+    --card:     #141724;
+    --border:   #22263a;
+    --text:     #c0c5dc;
+    --dim:      #5a607a;
+
+    --data:    #06b6d4;
+    --sdlc:    #22c55e;
+    --ir:      #ef4444;
+    --forensic:#a855f7;
+    --audit:   #f59e0b;
+    --change:  #4f8ef7;
+    --vendor:  #f472b6;
+    --bcdr:    #84cc16;
+    --threat:  #fb923c;
+    --gap:     #e2e8f0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 17px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    padding: 0 0 72px;
+  }
+
+  /* ── Sticky Header ─────────────────────────────────────── */
+  .site-header {
+    background: #0a0c14;
+    border-bottom: 2px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--data);
+    letter-spacing: -1px;
+  }
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .ctrl-row {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+  .ctrl-btn {
+    background: var(--border);
+    border: none;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color .15s, background .15s;
+  }
+  .ctrl-btn:hover { background: #2a2f4a; color: var(--text); }
+
+  /* ── Category Pill Nav ─────────────────────────────────── */
+  .pill-nav {
+    padding: 14px 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity .15s;
+  }
+  .pill:hover { opacity: 1; }
+  .pill-data    { background: #0e3a44; color: var(--data); }
+  .pill-sdlc    { background: #0d3320; color: var(--sdlc); }
+  .pill-ir      { background: #3a1212; color: var(--ir); }
+  .pill-forensic{ background: #2d1545; color: var(--forensic); }
+  .pill-audit   { background: #3a2a06; color: var(--audit); }
+  .pill-change  { background: #0d1e42; color: var(--change); }
+  .pill-vendor  { background: #3a1430; color: var(--vendor); }
+  .pill-bcdr    { background: #1e3305; color: var(--bcdr); }
+  .pill-threat  { background: #3a1e06; color: var(--threat); }
+  .pill-gap     { background: #1e2235; color: var(--gap); }
+
+  /* ── Main ──────────────────────────────────────────────── */
+  main { padding: 20px 20px 0; max-width: 860px; }
+
+  /* ── Section ───────────────────────────────────────────── */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .section-header:hover { background: #181b2c; }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--dim);
+    min-width: 22px;
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #dde2f5;
+    flex: 1;
+  }
+  .step-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .chevron {
+    color: var(--dim);
+    font-size: 0.75rem;
+    transition: transform .25s;
+    margin-left: 4px;
+  }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+
+  .section-body {
+    overflow: hidden;
+    transition: max-height .3s ease;
+  }
+  .section-body-inner { padding: 0 16px 16px; }
+
+  .section-desc {
+    font-size: 0.8rem;
+    color: var(--dim);
+    margin-bottom: 12px;
+    padding-top: 2px;
+    font-style: italic;
+  }
+
+  /* ── Steps ─────────────────────────────────────────────── */
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+
+  .step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #0d0f18;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+  }
+  .step-n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    min-width: 22px;
+    padding-top: 1px;
+  }
+  .step-content { flex: 1; }
+  .step-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #dde2f5;
+    display: block;
+  }
+  .step-detail {
+    font-size: 0.78rem;
+    color: var(--dim);
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* ── Variant sub-list (e.g. NIST 800-61 inside IR) ─────── */
+  .variant {
+    margin-top: 12px;
+    background: #0a0c14;
+    border: 1px solid #1a1e2e;
+    border-radius: 7px;
+    padding: 10px 12px;
+  }
+  .variant-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .variant .steps { gap: 5px; }
+  .variant .step { background: #0d0f18; }
+
+  /* ── Exam tip ───────────────────────────────────────────── */
+  .exam-tip {
+    margin-top: 12px;
+    background: #1a1500;
+    border: 1px solid #3a2e00;
+    border-left: 3px solid var(--audit);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 0.78rem;
+    color: #d4b96a;
+  }
+  .exam-tip strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--audit);
+    display: block;
+    margin-bottom: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Acronym grid (STRIDE / DREAD) ─────────────────────── */
+  .acronym-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 7px;
+    margin-top: 4px;
+  }
+  .acronym-item {
+    background: #0d0f18;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 11px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .acronym-letter {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    min-width: 18px;
+  }
+  .acronym-text { font-size: 0.8rem; }
+  .acronym-sub  { font-size: 0.73rem; color: var(--dim); display: block; margin-top: 2px; }
+
+  /* ── Colour helpers ─────────────────────────────────────── */
+  .c-data    { color: var(--data); }
+  .c-sdlc    { color: var(--sdlc); }
+  .c-ir      { color: var(--ir); }
+  .c-forensic{ color: var(--forensic); }
+  .c-audit   { color: var(--audit); }
+  .c-change  { color: var(--change); }
+  .c-vendor  { color: var(--vendor); }
+  .c-bcdr    { color: var(--bcdr); }
+  .c-threat  { color: var(--threat); }
+  .c-gap     { color: var(--gap); }
+
+  .tag-data    { background: #0e3a44; color: var(--data); }
+  .tag-sdlc    { background: #0d3320; color: var(--sdlc); }
+  .tag-ir      { background: #3a1212; color: var(--ir); }
+  .tag-forensic{ background: #2d1545; color: var(--forensic); }
+  .tag-audit   { background: #3a2a06; color: var(--audit); }
+  .tag-change  { background: #0d1e42; color: var(--change); }
+  .tag-vendor  { background: #3a1430; color: var(--vendor); }
+  .tag-bcdr    { background: #1e3305; color: var(--bcdr); }
+  .tag-threat  { background: #3a1e06; color: var(--threat); }
+  .tag-gap     { background: #1e2235; color: var(--gap); }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+    padding: 28px 20px 0;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 500px) {
+    html { font-size: 16px; }
+    .ctrl-row { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="logo">CCSP</span>
+  <span class="subtitle">FRAMEWORKS &amp; LIFECYCLES // ALL DOMAINS</span>
+  <div class="ctrl-row">
+    <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
+    <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
+  </div>
+</header>
+
+<nav class="pill-nav" aria-label="Jump to section">
+  <a href="#data"     class="pill pill-data">Data Lifecycle</a>
+  <a href="#sdlc"     class="pill pill-sdlc">SDLC</a>
+  <a href="#ir"       class="pill pill-ir">Incident Response</a>
+  <a href="#forensic" class="pill pill-forensic">Forensics / eDiscovery</a>
+  <a href="#audit"    class="pill pill-audit">Audit Process</a>
+  <a href="#change"   class="pill pill-change">Change Management</a>
+  <a href="#vendor"   class="pill pill-vendor">Vendor Management</a>
+  <a href="#bcdr"     class="pill pill-bcdr">BCP / DRP</a>
+  <a href="#threat"   class="pill pill-threat">Threat Modelling</a>
+  <a href="#gap"      class="pill pill-gap">Gap Analysis</a>
+</nav>
+
+<main>
+
+  <!-- 1. Cloud Secure Data Lifecycle -->
+  <div class="section" id="data">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">01</span>
+      <span class="section-tag tag-data">DATA</span>
+      <span class="section-title">Cloud Secure Data Lifecycle</span>
+      <span class="step-count">6 phases</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Not iterative in the traditional sense — data may exist in multiple phases simultaneously. Each phase has specific risks and controls.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-data">01</span><span class="step-content"><span class="step-label">Create</span><span class="step-detail">Data is generated or modified. Key control: classify at point of creation; apply labels and encryption.</span></span></li>
+          <li class="step"><span class="step-n c-data">02</span><span class="step-content"><span class="step-label">Store</span><span class="step-detail">Saved to a repository (database, file system). Controls: TLS/VPN in transit, encryption at rest, access policies, store only where classification permits.</span></span></li>
+          <li class="step"><span class="step-n c-data">03</span><span class="step-content"><span class="step-label">Use</span><span class="step-detail">Viewed, processed, or modified (handling). Most active phase with the most controls: DLP, IRM, access controls, logging. Note: data states (at rest / in transit / in use) are separate from this phase.</span></span></li>
+          <li class="step"><span class="step-n c-data">04</span><span class="step-content"><span class="step-label">Share</span><span class="step-detail">Exchanged between users or systems. Controls: proactive access controls (RBAC), reactive DLP/IRM, authentication and authorisation of sharing parties.</span></span></li>
+          <li class="step"><span class="step-n c-data">05</span><span class="step-content"><span class="step-label">Archive</span><span class="step-detail">Long-term storage; data no longer actively used but retained for compliance or legal reasons. Controls: retention schedules, key backup (for encrypted archives), access restrictions.</span></span></li>
+          <li class="step"><span class="step-n c-data">06</span><span class="step-content"><span class="step-label">Destroy</span><span class="step-detail">Permanent deletion/sanitisation per retention policy. Method must prevent recovery by unauthorised parties (crypto-shredding, physical destruction, etc.).</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SDLC -->
+  <div class="section" id="sdlc">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">02</span>
+      <span class="section-tag tag-sdlc">SDLC</span>
+      <span class="section-title">Software Development Lifecycle</span>
+      <span class="step-count">6 phases (CBK) / 8 (Study Guide)</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">The SSDLC (Secure SDLC) embeds security tasks into each phase — known as "shifting left". The NIST SSDF and OWASP SAMM are key frameworks for implementing it.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-sdlc">01</span><span class="step-content"><span class="step-label">Planning <span style="font-weight:400;font-size:0.75rem;color:var(--dim)">(Study Guide only)</span></span><span class="step-detail">Feasibility assessment, cost-benefit analysis, decision to proceed.</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">02</span><span class="step-content"><span class="step-label">Requirements</span><span class="step-detail">Business, functional, and security requirements. SSDLC: document specific security requirements here (e.g. encryption at rest).</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">03</span><span class="step-content"><span class="step-label">Design</span><span class="step-detail">Architecture, data flows, integration points. SSDLC: threat modelling, design test cases, security architecture decisions.</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">04</span><span class="step-content"><span class="step-label">Development / Coding</span><span class="step-detail">Build and integrate components. Includes COTS and cloud services. SSDLC: unit testing, code review, static analysis (SAST).</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">05</span><span class="step-content"><span class="step-label">Testing</span><span class="step-detail">Integration testing, UAT, traceability to requirements. SSDLC: dynamic testing (DAST), penetration testing, abuse-case testing.</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">06</span><span class="step-content"><span class="step-label">Training &amp; Transition <span style="font-weight:400;font-size:0.75rem;color:var(--dim)">(Study Guide only)</span></span><span class="step-detail">Also called acceptance, installation, and deployment. End-user training, go-live.</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">07</span><span class="step-content"><span class="step-label">Deployment</span><span class="step-detail">Harden default configs, configure IAM and APIs, apply least-privilege to cloud storage services. Create standard config guides per service.</span></span></li>
+          <li class="step"><span class="step-n c-sdlc">08</span><span class="step-content"><span class="step-label">Operations &amp; Maintenance (O&amp;M)</span><span class="step-detail">Longest phase. Ongoing monitoring, patching, access reviews, incident response, minor modifications.</span></span></li>
+        </ol>
+        <div class="exam-tip">
+          <strong>EXAM NOTE</strong>
+          The CCSP exam outline explicitly lists four phases: <em>design, code, test, maintain</em>. Know this shorthand but be familiar with the full list for scenario questions.
+        </div>
+        <div class="variant">
+          <p class="variant-title">NIST SSDF — 4 GROUPS</p>
+          <ol class="steps">
+            <li class="step"><span class="step-n c-sdlc">1</span><span class="step-content"><span class="step-label">Prepare the Organisation</span><span class="step-detail">People, processes, and technology.</span></span></li>
+            <li class="step"><span class="step-n c-sdlc">2</span><span class="step-content"><span class="step-label">Protect the Software</span><span class="step-detail">Prevent tampering and unauthorised access.</span></span></li>
+            <li class="step"><span class="step-n c-sdlc">3</span><span class="step-content"><span class="step-label">Produce Well-Secured Software</span><span class="step-detail">Minimise vulnerabilities by design.</span></span></li>
+            <li class="step"><span class="step-n c-sdlc">4</span><span class="step-content"><span class="step-label">Respond to Vulnerabilities</span><span class="step-detail">Remediate and prevent recurrence in future releases.</span></span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Incident Response -->
+  <div class="section" id="ir">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">03</span>
+      <span class="section-tag tag-ir">IR</span>
+      <span class="section-title">Incident Response</span>
+      <span class="step-count">5 phases (CBK) / 4 phases (NIST 800-61)</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">IR frameworks share a common structure: pre-incident planning, active response, and post-incident improvement. Shared responsibility with the CSP applies — some incidents require CSP coordination, others do not.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-ir">01</span><span class="step-content"><span class="step-label">Prepare</span><span class="step-detail">Document IRP and IRT, train team members, implement detection tools (SIEM, IDS). IR coordinator appointed; scenario-based response procedures written.</span></span></li>
+          <li class="step"><span class="step-n c-ir">02</span><span class="step-content"><span class="step-label">Detect</span><span class="step-detail">Continuous monitoring identifies anomalous activity. Classify and prioritise incident by Impact × Urgency (Low / Medium / High). Notification to legal/regulatory bodies if required (e.g. GDPR 72-hour rule).</span></span></li>
+          <li class="step"><span class="step-n c-ir">03</span><span class="step-content"><span class="step-label">Respond</span><span class="step-detail">Activate IR capability. Primary concern: containment — stop the incident spreading. Gather evidence for attribution. Implement scenario-based responses from IRP. Ongoing reporting to stakeholders.</span></span></li>
+          <li class="step"><span class="step-n c-ir">04</span><span class="step-content"><span class="step-label">Recover</span><span class="step-detail">May begin at detection phase. Eradicate root cause (replace hardware, block IPs, rebuild from known-good images), then restore normal operations. Ends when pre-incident service level is restored.</span></span></li>
+          <li class="step"><span class="step-n c-ir">05</span><span class="step-content"><span class="step-label">Post-Incident</span><span class="step-detail">Finalise documentation, gather lessons learned, conduct root-cause analysis. Update IRP and controls to prevent recurrence.</span></span></li>
+        </ol>
+        <div class="variant">
+          <p class="variant-title">NIST SP 800-61 — 4 PHASES</p>
+          <ol class="steps">
+            <li class="step"><span class="step-n c-ir">1</span><span class="step-content"><span class="step-label">Preparation</span></span></li>
+            <li class="step"><span class="step-n c-ir">2</span><span class="step-content"><span class="step-label">Detection and Analysis</span></span></li>
+            <li class="step"><span class="step-n c-ir">3</span><span class="step-content"><span class="step-label">Containment, Eradication, and Recovery</span></span></li>
+            <li class="step"><span class="step-n c-ir">4</span><span class="step-content"><span class="step-label">Post-Incident Activity</span></span></li>
+          </ol>
+        </div>
+        <div class="exam-tip">
+          <strong>EXAM NOTE</strong>
+          If an incident is severe enough to disrupt the organisation's ability to function, it escalates to an interruption and may invoke BCDR. The IR coordinator may be empowered to declare a disaster.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Forensics / eDiscovery -->
+  <div class="section" id="forensic">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">04</span>
+      <span class="section-tag tag-forensic">FORENSICS</span>
+      <span class="section-title">Digital Forensics / eDiscovery Evidence Handling</span>
+      <span class="step-count">4 phases</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Cloud forensics is highly specialised. The distributed, multitenant nature of cloud makes evidence collection, chain of custody, and jurisdictional issues significantly more complex than on-premises investigations.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-forensic">01</span><span class="step-content"><span class="step-label">Collection</span><span class="step-detail">Gather evidence; use original physical media where possible. In cloud, physical collection is often impossible — use virtual snapshots or CSP-provided tooling. Leave powered-on systems on to preserve volatile data. Verify integrity with hashing.</span></span></li>
+          <li class="step"><span class="step-n c-forensic">02</span><span class="step-content"><span class="step-label">Examination</span><span class="step-detail">Process and filter collected data to identify what is relevant. Always work from verified copies — never the original — to preserve evidence integrity.</span></span></li>
+          <li class="step"><span class="step-n c-forensic">03</span><span class="step-content"><span class="step-label">Analysis</span><span class="step-detail">Interpret findings; identify who did what, when, and how. Must be convincing, admissible, and relevant. Attribution is harder in multitenant environments.</span></span></li>
+          <li class="step"><span class="step-n c-forensic">04</span><span class="step-content"><span class="step-label">Reporting</span><span class="step-detail">Present findings clearly with a demonstrated chain of custody. Report must be understandable to non-technical audience (e.g. a court). Any gap in chain of custody weakens the evidence.</span></span></li>
+        </ol>
+        <div class="exam-tip">
+          <strong>EXAM NOTE</strong>
+          eDiscovery = any process in which electronic data is pursued, located, secured, and searched as evidence in a legal case. Key standards: ISO 27050 (eDiscovery), ISO 27037 (collecting electronic evidence). Chain of custody provides nonrepudiation.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Audit Process -->
+  <div class="section" id="audit">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">05</span>
+      <span class="section-tag tag-audit">AUDIT</span>
+      <span class="section-title">Audit Process</span>
+      <span class="step-count">Planning + 3 execution phases</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Audits may be financial, compliance, or security-focused. In cloud, SOC 2 Type II and ISO 27001 certifications are common audit outputs. Audit frameworks typically dictate deliverables and auditor qualifications.</p>
+
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:8px;letter-spacing:0.04em;">PHASE 1: PLANNING — key tasks</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-audit">1a</span><span class="step-content"><span class="step-label">Define objectives</span><span class="step-detail">Collaborative effort to determine systems/processes to be audited and standards to apply. Often begins many months in advance.</span></span></li>
+          <li class="step"><span class="step-n c-audit">1b</span><span class="step-content"><span class="step-label">Gap analysis / readiness assessment</span><span class="step-detail">Mock audit by internal personnel to identify issues before the formal audit.</span></span></li>
+          <li class="step"><span class="step-n c-audit">1c</span><span class="step-content"><span class="step-label">Define deliverables</span><span class="step-detail">Report, data for leadership, action items. Many frameworks (SOC 2, FedRAMP) dictate the specific deliverables.</span></span></li>
+          <li class="step"><span class="step-n c-audit">1d</span><span class="step-content"><span class="step-label">Identify auditors and qualifications</span><span class="step-detail">Frameworks specify internal vs. third-party, plus required credentials (e.g. CPA for SOC).</span></span></li>
+          <li class="step"><span class="step-n c-audit">1e</span><span class="step-content"><span class="step-label">Define scope and restrictions</span><span class="step-detail">Documented formally in the audit report so consumers can understand what was and wasn't covered.</span></span></li>
+        </ol>
+
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin:12px 0 8px;letter-spacing:0.04em;">PHASES 2–4: EXECUTION</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-audit">02</span><span class="step-content"><span class="step-label">Audit Fieldwork</span><span class="step-detail">Examine evidence, interview personnel, test controls. Findings captured as notes throughout.</span></span></li>
+          <li class="step"><span class="step-n c-audit">03</span><span class="step-content"><span class="step-label">Audit Reporting</span><span class="step-detail">Draft report issued to allow organisation to challenge inaccuracies. Final report issued once agreed.</span></span></li>
+          <li class="step"><span class="step-n c-audit">04</span><span class="step-content"><span class="step-label">Audit Follow-Up</span><span class="step-detail">Address identified weaknesses. Auditors may retest fixed controls and issue an addendum. Consumers of the report will ask what was done to address findings.</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Change Management -->
+  <div class="section" id="change">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">06</span>
+      <span class="section-tag tag-change">CHANGE MGMT</span>
+      <span class="section-title">Change &amp; Configuration Management</span>
+      <span class="step-count">Initial + Ongoing cycles</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Governed by the CMB (Configuration Management Board) or CCB (Change Control Board). Change types: low-risk (pre-authorised), normal (full process), emergency (expedited, documented after).</p>
+
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:8px;letter-spacing:0.04em;">INITIAL BASELINE (one-time)</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-change">01</span><span class="step-content"><span class="step-label">Full Asset Inventory</span><span class="step-detail">Determine what exists. May use BIA as an input.</span></span></li>
+          <li class="step"><span class="step-n c-change">02</span><span class="step-content"><span class="step-label">Codify the Baseline</span><span class="step-detail">Formal action with all CMB members. Negotiated via cost-benefit and risk analysis. Reflects organisation's risk appetite.</span></span></li>
+          <li class="step"><span class="step-n c-change">03</span><span class="step-content"><span class="step-label">Secure Baseline Build</span><span class="step-detail">Construct and store the approved baseline version for future reference.</span></span></li>
+          <li class="step"><span class="step-n c-change">04</span><span class="step-content"><span class="step-label">Deploy to New Assets</span><span class="step-detail">Apply baseline to each new asset acquired, per CM policy and CMB guidance.</span></span></li>
+        </ol>
+
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin:12px 0 8px;letter-spacing:0.04em;">ONGOING OPERATIONAL MODE</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-change">01</span><span class="step-content"><span class="step-label">CMB Meetings</span><span class="step-detail">Review change and exception requests. CMB can authorise, disallow, or request additional analysis/funding before authorising.</span></span></li>
+          <li class="step"><span class="step-n c-change">02</span><span class="step-content"><span class="step-label">CM Testing</span><span class="step-detail">Authorised changes tested in an isolated sandbox that mirrors production — never in production directly.</span></span></li>
+          <li class="step"><span class="step-n c-change">03</span><span class="step-content"><span class="step-label">Deployment</span><span class="step-detail">Modification made per approved plan. Reported to CMB upon completion.</span></span></li>
+          <li class="step"><span class="step-n c-change">04</span><span class="step-content"><span class="step-label">Documentation</span><span class="step-detail">All modifications reflected in the asset inventory and baseline. Asset disposal is also a modification and must be documented.</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Vendor Management Lifecycle -->
+  <div class="section" id="vendor">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">07</span>
+      <span class="section-tag tag-vendor">VENDOR</span>
+      <span class="section-title">Vendor Management Lifecycle</span>
+      <span class="step-count">4 steps</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Vendor relationships in cloud carry inherent lock-in risk. Due diligence at selection and ongoing assessment during maintenance are both required. Relevant standard: ISO 27036 (information security for supplier relationships).</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-vendor">01</span><span class="step-content"><span class="step-label">Vendor Selection</span><span class="step-detail">RFP or informal evaluation. Security contributes to requirements and evaluation. Assess vendor's own risk management programme, controls, and financial viability.</span></span></li>
+          <li class="step"><span class="step-n c-vendor">02</span><span class="step-content"><span class="step-label">Onboarding</span><span class="step-detail">Verify contract terms. Establish data transfer controls (encryption in transit and at rest). Set up incident notification procedures. Agree data ownership and deletion terms.</span></span></li>
+          <li class="step"><span class="step-n c-vendor">03</span><span class="step-content"><span class="step-label">Maintenance</span><span class="step-detail">Ongoing vendor assessments: site visits, review of independent audit reports (e.g. SOC 2 annually). Handle security incidents. A vendor that never reports incidents is a red flag.</span></span></li>
+          <li class="step"><span class="step-n c-vendor">04</span><span class="step-content"><span class="step-label">Offboarding</span><span class="step-detail">Ensure secure deletion of all confidential data. Orderly wind-down of the relationship. Lifecycle may then restart with a new vendor selection.</span></span></li>
+        </ol>
+        <div class="exam-tip">
+          <strong>EXAM NOTE</strong>
+          The consumer is always accountable for data protection even when a CSP hosts the data. Selecting a vendor without adequate due diligence may constitute negligence if a breach occurs.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. BCP / DRP -->
+  <div class="section" id="bcdr">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">08</span>
+      <span class="section-tag tag-bcdr">BC / DR</span>
+      <span class="section-title">BCP / DRP Planning Process</span>
+      <span class="step-count">5 stages</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">BCP keeps the business running during a disaster; DRP returns it to normal afterwards. They are separate plans but must be developed together with shared integration points. Both are activated by formal disaster declaration.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-bcdr">01</span><span class="step-content"><span class="step-label">Conduct BIA</span><span class="step-detail">Identify critical processes and supporting systems. Determine RTO, RPO, and MTD requirements. Prioritise: critical → important → support processes. SSO and identity systems must be restored before dependent systems.</span></span></li>
+          <li class="step"><span class="step-n c-bcdr">02</span><span class="step-content"><span class="step-label">Prioritise Recovery</span><span class="step-detail">Order systems by criticality. Document dependencies and the required restoration sequence. Only critical processes get priority — social/ancillary systems can wait.</span></span></li>
+          <li class="step"><span class="step-n c-bcdr">03</span><span class="step-content"><span class="step-label">Plan Continuity</span><span class="step-detail">Identify failover capabilities (automated failovers, alternate sites, cloud DR). Understand CSP availability regions, replication, and backup options. Architect cloud apps to meet continuity requirements.</span></span></li>
+          <li class="step"><span class="step-n c-bcdr">04</span><span class="step-content"><span class="step-label">Document Plans and Procedures</span><span class="step-detail">BCP and DRP documents with step-by-step instructions for high-stress scenarios. Include critical asset inventory, disaster declaration criteria, escalation authority, contact lists, and evacuation procedures.</span></span></li>
+          <li class="step"><span class="step-n c-bcdr">05</span><span class="step-content"><span class="step-label">Test, Train, and Maintain</span><span class="step-detail">Exercises and drills. Update plans after tests, incidents, or infrastructure changes. Training is critical — key personnel must know their roles before an emergency.</span></span></li>
+        </ol>
+        <div class="exam-tip">
+          <strong>EXAM NOTE</strong>
+          Human safety always takes priority over asset protection (ISC² foundational principle). A BCP that does not address human safety first is incomplete. Cloud-specific BIA concerns include ISP dependency, vendor lock-in risk, and legal/jurisdictional issues with data residency.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Threat Modelling -->
+  <div class="section" id="threat">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">09</span>
+      <span class="section-tag tag-threat">THREAT MODELLING</span>
+      <span class="section-title">Threat Modelling Frameworks</span>
+      <span class="step-count">STRIDE · DREAD · PASTA · ATASM</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+
+        <!-- STRIDE -->
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:8px;letter-spacing:0.04em;">STRIDE — THREAT TAXONOMY (Microsoft)</p>
+        <div class="acronym-grid">
+          <div class="acronym-item"><span class="acronym-letter c-threat">S</span><div><span class="acronym-text">Spoofing</span><span class="acronym-sub">Falsifying an identity. Mitigation: MFA, digital signatures.</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">T</span><div><span class="acronym-text">Tampering</span><span class="acronym-sub">Malicious data modification. Mitigation: access controls, logging.</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">R</span><div><span class="acronym-text">Repudiation</span><span class="acronym-sub">Denying an action occurred. Mitigation: logging, digital signatures (nonrepudiation).</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">I</span><div><span class="acronym-text">Information Disclosure</span><span class="acronym-sub">Unauthorised data access. Mitigation: encryption, DLP, access controls.</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">D</span><div><span class="acronym-text">Denial of Service</span><span class="acronym-sub">Loss of availability. Mitigation: redundancy, HA architecture, DoS mitigation services.</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">E</span><div><span class="acronym-text">Elevation of Privilege</span><span class="acronym-sub">Privilege escalation. Mitigation: strong access controls, input sanitisation.</span></div></div>
+        </div>
+
+        <!-- DREAD -->
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin:14px 0 8px;letter-spacing:0.04em;">DREAD — QUANTITATIVE SCORING (Microsoft, largely deprecated)</p>
+        <div class="acronym-grid">
+          <div class="acronym-item"><span class="acronym-letter c-threat">D</span><div><span class="acronym-text">Damage</span><span class="acronym-sub">How bad if the attack succeeds? (1–10)</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">R</span><div><span class="acronym-text">Reproducibility</span><span class="acronym-sub">How easily can the attack be replicated?</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">E</span><div><span class="acronym-text">Exploitability</span><span class="acronym-sub">Resources and skill required for the attack.</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">A</span><div><span class="acronym-text">Affected Users</span><span class="acronym-sub">How many users are impacted?</span></div></div>
+          <div class="acronym-item"><span class="acronym-letter c-threat">D</span><div><span class="acronym-text">Discoverability</span><span class="acronym-sub">How easily can the vulnerability be found?</span></div></div>
+        </div>
+
+        <!-- PASTA -->
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin:14px 0 8px;letter-spacing:0.04em;">PASTA — 7 STEPS (Process for Attack Simulation and Threat Analysis)</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-threat">01</span><span class="step-content"><span class="step-label">Define Objectives</span><span class="step-detail">Business objectives, security and compliance requirements, BIA to identify high-priority systems.</span></span></li>
+          <li class="step"><span class="step-n c-threat">02</span><span class="step-content"><span class="step-label">Define Technical Scope</span><span class="step-detail">Technical boundaries and all assets within them: hosts, apps, protocols, data assets.</span></span></li>
+          <li class="step"><span class="step-n c-threat">03</span><span class="step-content"><span class="step-label">Application Decomposition</span><span class="step-detail">Break complex apps into smaller components; define data flows and communications.</span></span></li>
+          <li class="step"><span class="step-n c-threat">04</span><span class="step-content"><span class="step-label">Threat Analysis</span><span class="step-detail">Use threat intelligence and logs to identify the most likely attack vectors.</span></span></li>
+          <li class="step"><span class="step-n c-threat">05</span><span class="step-content"><span class="step-label">Vulnerability Analysis</span><span class="step-detail">Identify vulnerabilities and correlate to threats. Risk = threat + vulnerability.</span></span></li>
+          <li class="step"><span class="step-n c-threat">06</span><span class="step-content"><span class="step-label">Attack Modelling</span><span class="step-detail">Simulate attacks using threat–vulnerability pairs to assess likelihood and impact.</span></span></li>
+          <li class="step"><span class="step-n c-threat">07</span><span class="step-content"><span class="step-label">Risk and Impact Analysis</span><span class="step-detail">Update BIA with findings. Prioritise risk treatment by criticality and operational impact.</span></span></li>
+        </ol>
+
+        <!-- ATASM -->
+        <p style="font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--dim);margin:14px 0 8px;letter-spacing:0.04em;">ATASM — 4 STEPS (Architecture, Threats, Attack Surfaces, Mitigations)</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-threat">01</span><span class="step-content"><span class="step-label">Architecture</span><span class="step-detail">Analyse system architecture; enumerate technology components, functions, and assets requiring protection.</span></span></li>
+          <li class="step"><span class="step-n c-threat">02</span><span class="step-content"><span class="step-label">Threats</span><span class="step-detail">List all possible threats, threat actors, goals, and methods (e.g. phishing for credentials to gain unauthorised access).</span></span></li>
+          <li class="step"><span class="step-n c-threat">03</span><span class="step-content"><span class="step-label">Attack Surfaces</span><span class="step-detail">Identify all exposed parts of the system. Remove surfaces already adequately secured by existing controls.</span></span></li>
+          <li class="step"><span class="step-n c-threat">04</span><span class="step-content"><span class="step-label">Mitigations</span><span class="step-detail">Apply new controls to remaining attack surfaces; use defence-in-depth as the implementation strategy.</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Gap Analysis -->
+  <div class="section" id="gap">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-num">10</span>
+      <span class="section-tag tag-gap">GAP ANALYSIS</span>
+      <span class="section-title">Gap Analysis Process</span>
+      <span class="step-count">6 steps</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="section-body-inner">
+        <p class="section-desc">Used to measure distance between current state and a target framework (e.g. ISO 27002, NIST CSF). Often performed before a formal audit as a readiness assessment. Results can drive risk prioritisation.</p>
+        <ol class="steps">
+          <li class="step"><span class="step-n c-gap">01</span><span class="step-content"><span class="step-label">Establish Need and Gain Management Support</span><span class="step-detail">Secure buy-in and resourcing before committing to the analysis.</span></span></li>
+          <li class="step"><span class="step-n c-gap">02</span><span class="step-content"><span class="step-label">Define Scope, Objectives, and Frameworks</span><span class="step-detail">Select the reference framework (e.g. ISO 27002, NIST CSF) to compare against.</span></span></li>
+          <li class="step"><span class="step-n c-gap">03</span><span class="step-content"><span class="step-label">Identify Current State</span><span class="step-detail">Evaluate the area under review — research, interviews with employees, review of processes and controls.</span></span></li>
+          <li class="step"><span class="step-n c-gap">04</span><span class="step-content"><span class="step-label">Review Evidence and Documentation</span><span class="step-detail">Verify statements and data; substantiate findings with documentary evidence.</span></span></li>
+          <li class="step"><span class="step-n c-gap">05</span><span class="step-content"><span class="step-label">Identify Gaps</span><span class="step-detail">Highlight differences between the framework requirements and current reality. Each gap represents a risk to the organisation.</span></span></li>
+          <li class="step"><span class="step-n c-gap">06</span><span class="step-content"><span class="step-label">Prepare Report and Obtain Sign-Off</span><span class="step-detail">Detail findings and get approval from appropriate leaders. Gaps should be prioritised by risk — address those that map to known risks first.</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="footer">ISC² CCSP &nbsp;•&nbsp; Frameworks &amp; Lifecycles Reference &nbsp;•&nbsp; All 6 Domains</div>
+
+<script>
+  function toggle(headerEl) {
+    const section = headerEl.closest('.section');
+    const body    = section.querySelector('.section-body');
+    const isCollapsed = section.classList.toggle('collapsed');
+    body.style.maxHeight = isCollapsed ? '0' : body.scrollHeight + 'px';
+  }
+
+  function setAll(collapse) {
+    document.querySelectorAll('.section').forEach(section => {
+      const body = section.querySelector('.section-body');
+      if (collapse) {
+        section.classList.add('collapsed');
+        body.style.maxHeight = '0';
+      } else {
+        section.classList.remove('collapsed');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  }
+
+  // Initialise max-heights so collapse transitions work correctly
+  document.querySelectorAll('.section-body').forEach(body => {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+</script>
+</body>
+</html>
