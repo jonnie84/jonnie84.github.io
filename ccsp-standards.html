@@ -39,16 +39,15 @@
     padding: 0 0 60px;
   }
 
-  /* ── Header ─────────────────────────────────────────────── */
   .site-header {
     background: #0a0c14;
     border-bottom: 2px solid var(--border);
-    padding: 18px 20px 14px;
+    padding: 14px 20px;
     position: sticky;
     top: 0;
     z-index: 100;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
     flex-wrap: wrap;
   }
@@ -64,13 +63,14 @@
     color: var(--dim);
     font-weight: 300;
   }
-  .site-header .tag {
-    font-size: 0.75rem;
-    color: var(--dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .site-header .home-link {
+  .header-actions {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .home-link {
     font-size: 0.8rem;
     font-family: 'JetBrains Mono', monospace;
     color: var(--dim);
@@ -80,7 +80,7 @@
     border-radius: 6px;
     transition: color 0.15s, border-color 0.15s;
   }
-  .site-header .home-link:hover { color: var(--text); border-color: var(--title-col); }
+  .home-link:hover { color: var(--text); border-color: var(--title-col); }
 
   /* ── TOC ─────────────────────────────────────────────────── */
   .toc {
@@ -277,19 +277,14 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  /* ── Collapse-all toggle ─────────────────────────────────── */
-  .controls {
-    padding: 0 16px 16px;
-    display: flex;
-    gap: 10px;
-  }
+  /* ── ctrl-btn ────────────────────────────────────────────── */
   .ctrl-btn {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-family: 'JetBrains Mono', monospace;
-    padding: 6px 14px;
+    padding: 4px 10px;
     border-radius: 6px;
     border: 1px solid var(--border);
-    background: var(--card);
+    background: transparent;
     color: var(--dim);
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
@@ -302,8 +297,11 @@
 <header class="site-header">
   <span class="logo">CCSP</span>
   <span class="subtitle">Standards &amp; Frameworks Reference</span>
-  <span class="tag">All 6 Domains</span>
-  <a class="home-link" href="index.html">⌂ Home</a>
+  <div class="header-actions">
+    <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
+    <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
+    <a class="home-link" href="index.html">⌂ Home</a>
+  </div>
 </header>
 
 <nav class="toc">
@@ -316,11 +314,6 @@
   <a class="toc-pill cat-priv"  href="#priv">Privacy</a>
   <a class="toc-pill cat-app"   href="#app">App Security</a>
 </nav>
-
-<div class="controls">
-  <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
-  <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
-</div>
 
 <main>
 
@@ -977,7 +970,7 @@
 
 </main>
 
-<div class="footer">ISC² CCSP &nbsp;•&nbsp; Standards &amp; Frameworks Reference &nbsp;•&nbsp; All 6 Domains</div>
+<div class="footer">ISC² CCSP &nbsp;•&nbsp; Standards &amp; Frameworks Reference</div>
 
 <script>
   function toggle(headerEl) {
