@@ -5,31 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jon's Site</title>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 0 20px;
-      color: #333;
+      background-color: #0f0f1a;
+      color: #e8e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 20px;
     }
-    h1 { margin-bottom: 8px; }
-    p { color: #666; margin-bottom: 32px; }
-    ul { list-style: none; padding: 0; }
-    li { margin-bottom: 12px; }
-    a {
+
+    .container {
+      max-width: 560px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #6b6b80;
+      font-size: 0.9rem;
+      margin-bottom: 40px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b6b80;
+      margin-bottom: 12px;
+    }
+
+    ul {
+      list-style: none;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      color: #e8e8f0;
       text-decoration: none;
-      color: #0066cc;
+      background-color: #1e1e32;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      transition: background-color 0.15s ease;
+      min-height: 52px;
     }
-    a:hover { text-decoration: underline; }
+
+    li:last-child a {
+      border-bottom: none;
+    }
+
+    li a:hover {
+      background-color: #252540;
+    }
+
+    li a:focus {
+      outline: 2px solid #6366f1;
+      outline-offset: -2px;
+    }
+
+    .arrow {
+      color: #6b6b80;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h1>Jon's Site</h1>
-  <p>CCSP Study Notes</p>
-  <ul>
-    <li><a href="ccsp-lifecycles.html">CCSP Lifecycles</a></li>
-    <li><a href="ccsp-ports.html">CCSP Ports</a></li>
-    <li><a href="ccsp-standards.html">CCSP Standards</a></li>
-  </ul>
+  <div class="container">
+    <h1>Jon's Site</h1>
+    <p class="subtitle">Study notes and tools</p>
+
+    <p class="section-label">CCSP Study Notes</p>
+    <ul>
+      <li><a href="ccsp-lifecycles.html">CCSP Lifecycles <span class="arrow">›</span></a></li>
+      <li><a href="ccsp-ports.html">CCSP Ports <span class="arrow">›</span></a></li>
+      <li><a href="ccsp-standards.html">CCSP Standards <span class="arrow">›</span></a></li>
+    </ul>
+  </div>
 </body>
 </html>
