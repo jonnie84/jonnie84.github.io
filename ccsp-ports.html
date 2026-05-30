@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCSP Port & Protocol Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #0d0f18;
+    --card:     #141724;
+    --card-alt: #181b2c;
+    --border:   #22263a;
+    --text:     #c0c5dc;
+    --dim:      #5a607a;
+
+    --cbk:      #22c55e;
+    --cbk-bg:   #052e16;
+    --gen:      #4f8ef7;
+    --gen-bg:   #0f1e3d;
+
+    --remote:   #f472b6;
+    --web:      #06b6d4;
+    --file:     #f59e0b;
+    --dns:      #a855f7;
+    --email:    #84cc16;
+    --vpn:      #ef4444;
+    --dir:      #fb923c;
+    --db:       #38bdf8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: #0a0c14;
+    border-bottom: 2px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .site-header .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--cbk);
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+
+  .site-header .subtitle {
+    font-size: 0.78rem;
+    color: var(--dim);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  .header-controls {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  .ctrl-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--dim);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ctrl-btn:hover { color: var(--text); border-color: var(--dim); }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-label {
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge-cbk { background: var(--cbk-bg); color: var(--cbk); border: 1px solid #166534; }
+  .badge-gen { background: var(--gen-bg); color: var(--gen); border: 1px solid #1d3e7a; }
+
+  .cat-dots {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .cat-dot {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--dim);
+  }
+  .cat-dot .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Main ── */
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 0; }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--card-alt);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: #1e2235; }
+
+  .section-header .badge { flex-shrink: 0; }
+
+  .section-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e2e6f0;
+    flex: 1;
+  }
+
+  .section-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--dim);
+  }
+
+  .chevron {
+    font-size: 0.75rem;
+    color: var(--dim);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+
+  .section-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .section.collapsed .section-body { max-height: 0 !important; }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background: #0f1220;
+  }
+
+  th {
+    padding: 9px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1a1e2e;
+    vertical-align: top;
+    font-size: 0.85rem;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #171a28; }
+
+  .td-port {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .td-proto {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--dim);
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .td-service {
+    font-weight: 600;
+    color: #dde2f0;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .td-alias {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--dim);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .td-notes {
+    color: #8a91ab;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .td-cat {
+    width: 6px;
+    padding: 0;
+  }
+  .cat-stripe {
+    width: 4px;
+    height: 100%;
+    min-height: 40px;
+    border-radius: 2px;
+    display: block;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    th:nth-child(2), td:nth-child(2) { display: none; } /* hide transport on mobile */
+    .td-port { font-size: 0.9rem; }
+    th, td { padding: 8px 10px; }
+    .site-header .subtitle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">CCSP // PORTS</div>
+  <div class="subtitle">Port & Protocol Reference &nbsp;·&nbsp; All 6 Domains</div>
+  <div class="header-controls">
+    <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
+    <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
+  </div>
+</header>
+
+<div class="legend">
+  <span class="legend-label">Source:</span>
+  <span><span class="badge badge-cbk">CBK</span>&nbsp; Explicitly in CBK / Study Guide</span>
+  <span><span class="badge badge-gen">GEN</span>&nbsp; General knowledge — may appear in scenario questions</span>
+  <span style="margin-left:8px;" class="legend-label">Category:</span>
+  <div class="cat-dots">
+    <span class="cat-dot"><span class="dot" style="background:var(--remote)"></span>Remote access</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--web)"></span>Web</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--file)"></span>File transfer</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--dns)"></span>DNS / DHCP</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--email)"></span>Email</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--vpn)"></span>VPN</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--dir)"></span>Directory / Auth</span>
+    <span class="cat-dot"><span class="dot" style="background:var(--db)"></span>Database</span>
+  </div>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 1 — CBK
+════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-cbk">
+  <div class="section-header" onclick="toggle(this)">
+    <span class="badge badge-cbk">CBK</span>
+    <span class="section-title">Explicitly in CBK / Study Guide</span>
+    <span class="section-meta">10 entries &nbsp;·&nbsp; high exam priority</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:6px;padding:0;"></th>
+          <th>Port</th>
+          <th>Transport</th>
+          <th>Service</th>
+          <th>Exam Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--remote)"></span></td>
+          <td class="td-port" style="color:var(--remote)">22</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">SSH / SFTP<span class="td-alias">Secure Shell</span></td>
+          <td class="td-notes">Secure CLI access to remote systems; jumpbox/bastion host example explicitly in CBK. Port 22 exposure cited as a vulnerability risk — brute-force attack scenario. SFTP also runs over SSH on this same port.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--remote)"></span></td>
+          <td class="td-port" style="color:var(--remote)">3389</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">RDP<span class="td-alias">Remote Desktop Protocol</span></td>
+          <td class="td-notes">Windows remote admin; also available on macOS, Linux, iOS, Android. CBK highlights MFA and patching as key controls. Active Directory and smart card auth supported. Often targeted by attackers.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--remote)"></span></td>
+          <td class="td-port" style="color:var(--remote)">23</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">Telnet<span class="td-alias">Insecure — block this</span></td>
+          <td class="td-notes">CBK uses TCP/23 as the explicit example of traffic a <em>stateless firewall</em> should block. Plaintext protocol — no encryption. Should never be used in any cloud environment.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--web)"></span></td>
+          <td class="td-port" style="color:var(--web)">80</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">HTTP<span class="td-alias">Unencrypted web</span></td>
+          <td class="td-notes">CBK explicitly cites 80/443 together as the ports permitted in a production NSG/firewall example. Unencrypted — prefer HTTPS. Appears in WAF and API gateway discussion.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--web)"></span></td>
+          <td class="td-port" style="color:var(--web)">443</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">HTTPS / TLS<span class="td-alias">Encrypted web</span></td>
+          <td class="td-notes">Same CBK production example as port 80. Standard for all web-facing cloud services. SSL VPNs also operate on 443. TLS 1.3 is the current version — earlier versions deprecated or compromised.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--file)"></span></td>
+          <td class="td-port" style="color:var(--file)">20</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">FTP (data)<span class="td-alias">File Transfer Protocol</span></td>
+          <td class="td-notes">CBK stateful firewall example: seeing traffic on port 20 gives the firewall context to permit a dynamically negotiated high port for the actual data transfer. Paired with port 21.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--file)"></span></td>
+          <td class="td-port" style="color:var(--file)">21</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">FTP (control)<span class="td-alias">File Transfer Protocol</span></td>
+          <td class="td-notes">FTP control channel — same CBK stateful firewall example as port 20. FTP also cited as a transport for SOAP. Use SFTP (port 22) or FTPS (port 990) in practice; plain FTP is insecure.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dns)"></span></td>
+          <td class="td-port" style="color:var(--dns)">53</td>
+          <td class="td-proto">UDP / TCP</td>
+          <td class="td-service">DNS<span class="td-alias">Domain Name System</span></td>
+          <td class="td-notes">CBK explicitly states DNS queries use <strong>UDP/53</strong>; TCP used for zone transfers. Cache poisoning, DNS spoofing, and DNSSEC all discussed in depth. Zone transfers lack authentication by default — a key attack vector.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dns)"></span></td>
+          <td class="td-port" style="color:var(--dns)">67</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">DHCP (server)<span class="td-alias">Dynamic Host Config</span></td>
+          <td class="td-notes">DHCP server listens on UDP/67 for DHCPDISCOVER. CBK explicitly covers the DORA process: <strong>D</strong>iscover → <strong>O</strong>ffer → <strong>R</strong>equest → <strong>A</strong>cknowledge. Misconfigured DHCP can enable DoS or MITM attacks.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dns)"></span></td>
+          <td class="td-port" style="color:var(--dns)">68</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">DHCP (client)<span class="td-alias">Dynamic Host Config</span></td>
+          <td class="td-notes">Server sends DHCPOFFER to the client on UDP/68. Explicitly stated alongside port 67 in the CBK DHCP section. DHCPv6 can use IPSec for authentication and encryption.</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 2 — GEN
+════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-gen">
+  <div class="section-header" onclick="toggle(this)">
+    <span class="badge badge-gen">GEN</span>
+    <span class="section-title">General Knowledge — May Appear in Scenario Questions</span>
+    <span class="section-meta">12 entries &nbsp;·&nbsp; lower exam priority</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:6px;padding:0;"></th>
+          <th>Port</th>
+          <th>Transport</th>
+          <th>Service</th>
+          <th>Exam Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--remote)"></span></td>
+          <td class="td-port" style="color:var(--remote)">5900</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">VNC<span class="td-alias">Virtual Network Computing</span></td>
+          <td class="td-notes">CBK mentions VNC as the Unix/Linux equivalent of RDP for remote admin access — but does not state the port number explicitly. Default port is 5900.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--email)"></span></td>
+          <td class="td-port" style="color:var(--email)">25</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">SMTP<span class="td-alias">Simple Mail Transfer</span></td>
+          <td class="td-notes">Email sending protocol. SMTP named in CBK as a SOAP transport — but port not stated. May appear as context in scenario questions about email-based threats or data exfiltration.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--email)"></span></td>
+          <td class="td-port" style="color:var(--email)">110</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">POP3<span class="td-alias">Post Office Protocol v3</span></td>
+          <td class="td-notes">Email retrieval — downloads and typically deletes from server. Not explicitly in CBK. Low exam priority; may appear in legacy protocol scenarios.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--email)"></span></td>
+          <td class="td-port" style="color:var(--email)">143</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">IMAP<span class="td-alias">Internet Message Access</span></td>
+          <td class="td-notes">Email retrieval — keeps mail on the server, supports multi-device access. Not explicitly in CBK. Lower priority than SMTP for exam purposes.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dns)"></span></td>
+          <td class="td-port" style="color:var(--dns)">123</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">NTP<span class="td-alias">Network Time Protocol</span></td>
+          <td class="td-notes">Not in CBK explicitly, but relevant to cloud security: accurate timestamps underpin log integrity, audit trails, and certificate validity. Time synchronisation is a foundational security control.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dns)"></span></td>
+          <td class="td-port" style="color:var(--dns)">161</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">SNMP<span class="td-alias">Simple Network Mgmt</span></td>
+          <td class="td-notes">Network device monitoring and management. Not explicitly in CBK. May appear in questions about network monitoring, SIEM data sources, or insecure legacy protocols (SNMPv1/v2 send community strings in plaintext).</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dir)"></span></td>
+          <td class="td-port" style="color:var(--dir)">389</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">LDAP<span class="td-alias">Lightweight Directory</span></td>
+          <td class="td-notes">Directory services and identity lookups. CBK covers directory services and IAM in depth, but does not explicitly state the port. Prefer LDAPS (636) in practice — plain LDAP is unencrypted.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dir)"></span></td>
+          <td class="td-port" style="color:var(--dir)">636</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">LDAPS<span class="td-alias">LDAP over TLS</span></td>
+          <td class="td-notes">Secure LDAP over TLS. Not explicitly in CBK but the logical secure counterpart to port 389. Relevant to questions on securing identity/directory traffic in hybrid cloud environments.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--dir)"></span></td>
+          <td class="td-port" style="color:var(--dir)">1812</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">RADIUS<span class="td-alias">Remote Auth Dial-In</span></td>
+          <td class="td-notes">AAA (Authentication, Authorisation, Accounting) for network access control. Not explicitly in CBK but relevant to identity federation and network access scenarios. Port 1813 used for RADIUS accounting.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--vpn)"></span></td>
+          <td class="td-port" style="color:var(--vpn)">500</td>
+          <td class="td-proto">UDP</td>
+          <td class="td-service">IKEv2 / IPSec<span class="td-alias">VPN key exchange</span></td>
+          <td class="td-notes">CBK explicitly covers IKEv2/IPSec as a VPN protocol (using Diffie–Hellman for session key negotiation) but does not state the port. Also uses UDP 4500 for NAT traversal.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--vpn)"></span></td>
+          <td class="td-port" style="color:var(--vpn)">1194</td>
+          <td class="td-proto">UDP / TCP</td>
+          <td class="td-service">OpenVPN<span class="td-alias">Open-source VPN</span></td>
+          <td class="td-notes">CBK explicitly names OpenVPN as a VPN option built on OpenSSL, deployable in cloud environments — but does not state the port. Default is UDP/1194; TCP/443 also common for firewall traversal.</td>
+        </tr>
+
+        <tr>
+          <td class="td-cat"><span class="cat-stripe" style="background:var(--db)"></span></td>
+          <td class="td-port" style="color:var(--db)">1433</td>
+          <td class="td-proto">TCP</td>
+          <td class="td-service">MS SQL Server<span class="td-alias">Microsoft SQL</span></td>
+          <td class="td-notes">Not in CBK, but the CBK's VLAN segmentation example separates web and database tiers — knowing common DB ports is useful context for NSG/firewall rule scenarios. MySQL uses 3306, PostgreSQL 5432.</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">ISC² CCSP &nbsp;·&nbsp; Port & Protocol Reference &nbsp;·&nbsp; All 6 Domains</div>
+
+</main>
+
+<script>
+  function toggle(headerEl) {
+    const section = headerEl.closest('.section');
+    const body = section.querySelector('.section-body');
+    const isCollapsed = section.classList.toggle('collapsed');
+    body.style.maxHeight = isCollapsed ? '0' : body.scrollHeight + 'px';
+  }
+
+  function setAll(collapse) {
+    document.querySelectorAll('.section').forEach(section => {
+      const body = section.querySelector('.section-body');
+      if (collapse) {
+        section.classList.add('collapsed');
+        body.style.maxHeight = '0';
+      } else {
+        section.classList.remove('collapsed');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  }
+
+  document.querySelectorAll('.section-body').forEach(body => {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+</script>
+</body>
+</html>
