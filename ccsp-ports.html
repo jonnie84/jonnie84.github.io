@@ -218,10 +218,15 @@
   }
 
   .col-stripe  { width: 6px; }
-  .col-port    { width: 70px; }
-  .col-proto   { width: 100px; }
-  .col-service { width: 180px; }
-  .col-notes   { width: calc(100% - 356px); }
+  .col-port    { width: 60px; }
+  .col-proto   { width: 90px; }
+  .col-service { width: 150px; }
+
+  th:nth-child(1) { width: 6px; padding: 0; }
+  th:nth-child(2) { width: 60px; }
+  th:nth-child(3) { width: 90px; }
+  th:nth-child(4) { width: 150px; }
+  th:nth-child(5) { width: auto; }
 
   thead tr {
     background: #0f1220;
@@ -304,11 +309,19 @@
     letter-spacing: 0.05em;
   }
 
+  @media (max-width: 900px) {
+    th, td { padding: 8px 8px; }
+    .td-notes { font-size: 0.78rem; }
+  }
+
   @media (max-width: 600px) {
-    th:nth-child(2), td:nth-child(2) { display: none; } /* hide transport on mobile */
-    .td-port { font-size: 0.9rem; }
-    th, td { padding: 8px 10px; }
+    th:nth-child(3), td:nth-child(3) { display: none; } /* hide Transport */
+    th:nth-child(4) { width: 90px; }
+    th, td { padding: 6px 6px; }
+    .td-port { font-size: 0.85rem; }
+    .td-notes { font-size: 0.75rem; }
     .site-header .subtitle { display: none; }
+    body { overflow-x: auto; }
   }
 </style>
 </head>
@@ -355,12 +368,9 @@
   </div>
   <div class="section-body">
     <table>
-      <colgroup>
-        <col class="col-stripe"><col class="col-port"><col class="col-proto"><col class="col-service"><col class="col-notes">
-      </colgroup>
       <thead>
         <tr>
-          <th style="padding:0;"></th>
+          <th></th>
           <th>Port</th>
           <th>Transport</th>
           <th>Service</th>
@@ -466,12 +476,9 @@
   </div>
   <div class="section-body">
     <table>
-      <colgroup>
-        <col class="col-stripe"><col class="col-port"><col class="col-proto"><col class="col-service"><col class="col-notes">
-      </colgroup>
       <thead>
         <tr>
-          <th style="padding:0;"></th>
+          <th></th>
           <th>Port</th>
           <th>Transport</th>
           <th>Service</th>
