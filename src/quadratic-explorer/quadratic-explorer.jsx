@@ -40,6 +40,24 @@ const VOCAB = [
 ];
 
 export default function QuadraticExplorer() {
+  const [dark, setDark] = useState(true);
+
+  const T = {
+    bg:        dark ? '#0f0f1a'                  : '#f4f4fc',
+    card:      dark ? '#1e1e32'                  : '#ffffff',
+    cardBorder:dark ? '#2e2e50'                  : '#ddddf0',
+    border:    dark ? 'rgba(255,255,255,0.07)'   : 'rgba(0,0,0,0.09)',
+    text:      dark ? '#e8e8f0'                  : '#1a1a2e',
+    textDim:   dark ? '#8888aa'                  : '#4a4a6a',
+    textMuted: dark ? '#6b6b80'                  : '#6868a0',
+    accent:    '#6366f1',
+    accentText:dark ? '#c4b5fd'                  : '#6366f1',
+    accentMid: dark ? '#a5b4fc'                  : '#6366f1',
+    exampleBg: dark ? '#1e1e32'                  : '#ffffff',
+    eqBg:      dark ? '#1e1e32'                  : '#ffffff',
+    eqBorder:  dark ? '#6366f1'                  : '#6366f1',
+  };
+
   const [a, setA] = useState(1);
   const [b, setB] = useState(-5);
   const [c, setC] = useState(6);
@@ -91,16 +109,16 @@ export default function QuadraticExplorer() {
   }, [a, b, c]);
 
   const eqStr = buildEquationStr(a, b, c);
-  const tickStyle = { fill: "#9090b0", fontSize: 11 };
+  const tickStyle = { fill: T.textMuted, fontSize: 11 };
 
   const tabStyle = (tab) => ({
     padding: "8px 14px",
     borderRadius: "6px 6px 0 0",
     border: "1px solid",
-    borderBottom: activeTab === tab ? "1px solid #13132a" : "1px solid #2e2e50",
-    borderColor: activeTab === tab ? "#6366f1 #6366f1 #13132a #6366f1" : "#2e2e50 #2e2e50 #2e2e50 #2e2e50",
-    background: activeTab === tab ? "#13132a" : "#1a1a30",
-    color: activeTab === tab ? "#a5b4fc" : "#6b6b80",
+    borderBottom: activeTab === tab ? `1px solid ${T.bg}` : `1px solid ${T.cardBorder}`,
+    borderColor: activeTab === tab ? `${T.accent} ${T.accent} ${T.bg} ${T.accent}` : `${T.cardBorder} ${T.cardBorder} ${T.cardBorder} ${T.cardBorder}`,
+    background: activeTab === tab ? T.bg : T.card,
+    color: activeTab === tab ? T.accentMid : T.textMuted,
     cursor: "pointer",
     fontSize: 12,
     fontWeight: activeTab === tab ? "bold" : "normal",
@@ -108,27 +126,31 @@ export default function QuadraticExplorer() {
   });
 
   return (
-    <div style={{ background: "#0f0f1a", minHeight: "100vh", padding: "20px 16px", fontFamily: "'Segoe UI', Arial, sans-serif", color: "#e8e8f0" }}>
+    <div style={{ background: T.bg, minHeight: "100vh", padding: "20px 16px", fontFamily: "'Segoe UI', Arial, sans-serif", color: T.text }}>
       <div style={{ maxWidth: 780, margin: "0 auto" }}>
 
         <div style={{ marginBottom: 20 }}>
-          <h1 style={{ fontSize: 20, fontWeight: "bold", color: "#c4b5fd", margin: "0 0 4px 0" }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 10 }}>
+            <a href="../../" style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',textDecoration:'none' }}>⌂ Home</a>
+            <button onClick={() => setDark(d => !d)} style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',cursor:'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: "bold", color: T.accentText, margin: "0 0 4px 0" }}>
             📈 Quadratic Graph Explorer
           </h1>
-          <p style={{ fontSize: 13, color: "#8888aa", margin: 0 }}>
+          <p style={{ fontSize: 13, color: T.textDim, margin: 0 }}>
             Sec 2 Maths · Learn to plot y = ax² + bx + c step by step
           </p>
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <p style={{ fontSize: 11, color: "#6b6b80", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Try an example</p>
+          <p style={{ fontSize: 11, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Try an example</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {EXAMPLES.map((ex, i) => (
               <button key={i} onClick={() => { setA(ex.a); setB(ex.b); setC(ex.c); setExpandedStep(null); }}
                 title={ex.note}
                 style={{
-                  background: "#1e1e32", border: "1px solid #2e2e50", borderRadius: 6,
-                  color: "#c4b5fd", fontSize: 12, padding: "6px 12px", cursor: "pointer"
+                  background: T.exampleBg, border: `1px solid ${T.cardBorder}`, borderRadius: 6,
+                  color: T.accentText, fontSize: 12, padding: "6px 12px", cursor: "pointer"
                 }}>
                 {ex.label}
               </button>
@@ -142,24 +164,24 @@ export default function QuadraticExplorer() {
             ["b", b, setB, "Shifts the turning point left or right."],
             ["c", c, setC, "Sets the y-intercept."],
           ].map(([label, val, setter, hint]) => (
-            <div key={label} style={{ background: "#1e1e32", border: "1px solid #2e2e50", borderRadius: 8, padding: "10px 14px" }}>
+            <div key={label} style={{ background: T.card, border: `1px solid ${T.cardBorder}`, borderRadius: 8, padding: "10px 14px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 13, color: "#a5b4fc", fontWeight: "bold" }}>{label}</span>
-                <span style={{ fontSize: 14, fontFamily: "monospace", color: "#e8e8f0" }}>{val}</span>
+                <span style={{ fontSize: 13, color: T.accentMid, fontWeight: "bold" }}>{label}</span>
+                <span style={{ fontSize: 14, fontFamily: "monospace", color: T.text }}>{val}</span>
               </div>
               <input type="range" min={-6} max={6} step={1} value={val}
                 onChange={e => { setter(Number(e.target.value)); setExpandedStep(null); }}
-                style={{ width: "100%", accentColor: "#6366f1" }} />
-              <p style={{ fontSize: 10, color: "#6b6b80", margin: "6px 0 0 0", lineHeight: 1.4 }}>{hint}</p>
+                style={{ width: "100%", accentColor: T.accent }} />
+              <p style={{ fontSize: 10, color: T.textMuted, margin: "6px 0 0 0", lineHeight: 1.4 }}>{hint}</p>
             </div>
           ))}
         </div>
 
         <div style={{
-          background: "#1e1e32", border: "2px solid #6366f1", borderRadius: 10, padding: "12px 20px",
+          background: T.eqBg, border: `2px solid ${T.eqBorder}`, borderRadius: 10, padding: "12px 20px",
           marginBottom: 20, textAlign: "center"
         }}>
-          <span style={{ fontSize: 22, color: "#a5b4fc", fontStyle: "italic", letterSpacing: 1 }}>{eqStr}</span>
+          <span style={{ fontSize: 22, color: T.accentMid, fontStyle: "italic", letterSpacing: 1 }}>{eqStr}</span>
         </div>
 
         {a === 0 && (
@@ -170,26 +192,26 @@ export default function QuadraticExplorer() {
 
         {analysis && (
           <>
-            <div style={{ background: "#13132a", border: "1px solid #2e2e50", borderRadius: 10, padding: "16px 6px 10px 6px", marginBottom: 6 }}>
+            <div style={{ background: T.card, border: `1px solid ${T.cardBorder}`, borderRadius: 10, padding: "16px 6px 10px 6px", marginBottom: 6 }}>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={analysis.points} margin={{ top: 10, right: 24, left: 0, bottom: 10 }}>
-                  <CartesianGrid stroke="#2a2a45" strokeDasharray="3 3" />
+                  <CartesianGrid stroke={dark ? '#2e2e50' : '#e0e0f0'} strokeDasharray="3 3" />
                   <XAxis dataKey="x" type="number"
                     domain={[analysis.minX, analysis.maxX]}
                     tick={tickStyle} tickLine={false}
                     axisLine={{ stroke: "#404060" }}
                     tickCount={Math.min(13, analysis.maxX - analysis.minX + 1)}
                     allowDuplicatedCategory={false}>
-                    <Label value="x" position="insideRight" offset={-4} fill="#6b6b80" fontSize={12} />
+                    <Label value="x" position="insideRight" offset={-4} fill={T.textMuted} fontSize={12} />
                   </XAxis>
                   <YAxis domain={analysis.domainY} tick={tickStyle} tickLine={false}
                     axisLine={{ stroke: "#404060" }} width={38}>
-                    <Label value="y" position="insideTop" offset={-2} fill="#6b6b80" fontSize={12} />
+                    <Label value="y" position="insideTop" offset={-2} fill={T.textMuted} fontSize={12} />
                   </YAxis>
                   <Tooltip
-                    contentStyle={{ background: "#1e1e32", border: "1px solid #6366f1", borderRadius: 6, fontSize: 12 }}
-                    labelStyle={{ color: "#a5b4fc" }}
-                    itemStyle={{ color: "#e8e8f0" }}
+                    contentStyle={{ background: T.card, border: `1px solid ${T.accent}`, borderRadius: 6, fontSize: 12 }}
+                    labelStyle={{ color: T.accentMid }}
+                    itemStyle={{ color: T.text }}
                     formatter={(v) => [fmtN(v), "y"]}
                     labelFormatter={(v) => `x = ${fmtN(v)}`}
                   />
@@ -198,26 +220,26 @@ export default function QuadraticExplorer() {
                   <ReferenceLine x={analysis.vertexX} stroke="#818cf8" strokeDasharray="6 3" strokeWidth={1.5}
                     label={{ value: `x = ${fmtN(analysis.vertexX)}`, fill: "#818cf8", fontSize: 10, position: "insideTopRight" }} />
                   {analysis.roots.map((r, i) => (
-                    <ReferenceDot key={i} x={r} y={0} r={5} fill="#34d399" stroke="#0f0f1a" strokeWidth={2}
+                    <ReferenceDot key={i} x={r} y={0} r={5} fill="#34d399" stroke={T.bg} strokeWidth={2}
                       label={{ value: `(${fmtN(r)}, 0)`, fill: "#34d399", fontSize: 10, position: i === 0 ? "insideBottomLeft" : "insideBottomRight" }} />
                   ))}
-                  <ReferenceDot x={0} y={analysis.yIntercept} r={5} fill="#fbbf24" stroke="#0f0f1a" strokeWidth={2}
+                  <ReferenceDot x={0} y={analysis.yIntercept} r={5} fill="#fbbf24" stroke={T.bg} strokeWidth={2}
                     label={{ value: `(0, ${fmtN(analysis.yIntercept)})`, fill: "#fbbf24", fontSize: 10, position: "insideTopRight" }} />
-                  <ReferenceDot x={analysis.vertexX} y={analysis.vertexY} r={6} fill="#f472b6" stroke="#0f0f1a" strokeWidth={2}
+                  <ReferenceDot x={analysis.vertexX} y={analysis.vertexY} r={6} fill="#f472b6" stroke={T.bg} strokeWidth={2}
                     label={{ value: `(${fmtN(analysis.vertexX)}, ${fmtN(analysis.vertexY)})`, fill: "#f472b6", fontSize: 10, position: a > 0 ? "insideTop" : "insideBottom" }} />
                   <Line type="monotone" dataKey="y" stroke="#6366f1" strokeWidth={2.5}
-                    dot={false} activeDot={{ r: 4, fill: "#a5b4fc" }} />
+                    dot={false} activeDot={{ r: 4, fill: T.accentMid }} />
                 </LineChart>
               </ResponsiveContainer>
 
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center", marginTop: 8, paddingTop: 8, borderTop: "1px solid #2e2e50" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center", marginTop: 8, paddingTop: 8, borderTop: `1px solid ${T.cardBorder}` }}>
                 {[
                   ["●", "#f472b6", "Turning point"],
                   ["●", "#fbbf24", "y-intercept"],
                   ["●", "#34d399", "x-intercept(s)"],
                   ["╌", "#818cf8", "Line of symmetry"],
                 ].map(([sym, col, lbl]) => (
-                  <span key={lbl} style={{ fontSize: 11, color: "#9090b0", display: "flex", alignItems: "center", gap: 4 }}>
+                  <span key={lbl} style={{ fontSize: 11, color: T.textMuted, display: "flex", alignItems: "center", gap: 4 }}>
                     <span style={{ color: col, fontSize: 14 }}>{sym}</span> {lbl}
                   </span>
                 ))}
@@ -231,12 +253,12 @@ export default function QuadraticExplorer() {
                 ))}
               </div>
 
-              <div style={{ background: "#13132a", border: "1px solid #6366f1", borderRadius: "0 8px 8px 8px", padding: "16px" }}>
+              <div style={{ background: T.bg, border: `1px solid ${T.accent}`, borderRadius: "0 8px 8px 8px", padding: "16px" }}>
 
                 {activeTab === "steps" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-                    <StepCard num={1} title="Which way does the curve open?"
+                    <StepCard T={T} num={1} title="Which way does the curve open?"
                       expanded={expandedStep === 1} onToggle={() => setExpandedStep(expandedStep === 1 ? null : 1)}>
                       <p>Look at <strong>a</strong> — the number in front of x².</p>
                       <div style={{ display: "flex", gap: 8, margin: "10px 0", flexWrap: "wrap" }}>
@@ -246,36 +268,36 @@ export default function QuadraticExplorer() {
                       <p>Here, <strong>a = {a}</strong>, so the curve opens <strong style={{ color: a > 0 ? "#34d399" : "#f87171" }}>{a > 0 ? "upward ∪" : "downward ∩"}</strong> and has a <strong>{a > 0 ? "minimum" : "maximum"}</strong> turning point.</p>
                     </StepCard>
 
-                    <StepCard num={2} title="Find the y-intercept"
+                    <StepCard T={T} num={2} title="Find the y-intercept"
                       expanded={expandedStep === 2} onToggle={() => setExpandedStep(expandedStep === 2 ? null : 2)}>
                       <p>The y-intercept is where the curve crosses the <strong>y-axis</strong>. This happens when x = 0.</p>
-                      <CalcBox>
+                      <CalcBox T={T}>
                         y = {a}(0)² + ({b})(0) + {c} = <Strong>{c}</Strong>
                       </CalcBox>
                       <p>✅ y-intercept: <YellowCoord>(0, {c})</YellowCoord></p>
-                      <p style={{ fontSize: 12, color: "#8888aa" }}>💡 Shortcut: the y-intercept is always equal to <strong>c</strong>. Just read it off the equation!</p>
+                      <p style={{ fontSize: 12, color: T.textDim }}>💡 Shortcut: the y-intercept is always equal to <strong>c</strong>. Just read it off the equation!</p>
                     </StepCard>
 
-                    <StepCard num={3} title="Find the line of symmetry and turning point"
+                    <StepCard T={T} num={3} title="Find the line of symmetry and turning point"
                       expanded={expandedStep === 3} onToggle={() => setExpandedStep(expandedStep === 3 ? null : 3)}>
                       <p>The <strong>line of symmetry</strong> is a vertical dashed line that cuts the parabola into two equal mirror halves. Its equation gives you the x-coordinate of the turning point.</p>
                       <p style={{ marginTop: 8 }}><strong>Formula for line of symmetry:</strong></p>
-                      <CalcBox>
+                      <CalcBox T={T}>
                         x = −b ÷ (2a) = −({b}) ÷ (2 × {a}) = <Strong>{fmtN(analysis.vertexX)}</Strong>
                       </CalcBox>
                       <p>Now substitute x = {fmtN(analysis.vertexX)} back into the equation to find the y-coordinate:</p>
-                      <CalcBox>
+                      <CalcBox T={T}>
                         y = {a}({fmtN(analysis.vertexX)})² + ({b})({fmtN(analysis.vertexX)}) + {c} = <Strong>{fmtN(analysis.vertexY)}</Strong>
                       </CalcBox>
                       <p>✅ Turning point: <PinkCoord>({fmtN(analysis.vertexX)}, {fmtN(analysis.vertexY)})</PinkCoord></p>
                       <p>✅ Line of symmetry: <strong style={{ color: "#818cf8" }}>x = {fmtN(analysis.vertexX)}</strong></p>
                     </StepCard>
 
-                    <StepCard num={4} title="Find the x-intercepts (if any)"
+                    <StepCard T={T} num={4} title="Find the x-intercepts (if any)"
                       expanded={expandedStep === 4} onToggle={() => setExpandedStep(expandedStep === 4 ? null : 4)}>
                       <p>x-intercepts are where the curve crosses the <strong>x-axis</strong>, i.e. when y = 0.</p>
                       <p style={{ marginTop: 8 }}>First, calculate <strong>b² − 4ac</strong> to find out how many x-intercepts there are:</p>
-                      <CalcBox>
+                      <CalcBox T={T}>
                         b² − 4ac = ({b})² − 4({a})({c}) = {b * b} − ({4 * a * c}) = <Strong color={analysis.disc > 0 ? "#34d399" : analysis.disc < 0 ? "#f87171" : "#fbbf24"}>{fmtN(analysis.disc)}</Strong>
                       </CalcBox>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6, margin: "8px 0" }}>
@@ -286,7 +308,7 @@ export default function QuadraticExplorer() {
                       {analysis.disc > 0 && (
                         <>
                           <p>Use the quadratic formula to find the two x-intercepts:</p>
-                          <CalcBox>
+                          <CalcBox T={T}>
                             x = (−b ± √(b²−4ac)) ÷ 2a<br />
                             x = (−({b}) ± √{fmtN(analysis.disc)}) ÷ (2 × {a})<br />
                             x₁ = <Strong color="#34d399">{fmtN(analysis.roots[0])}</Strong> &nbsp;&nbsp; x₂ = <Strong color="#34d399">{fmtN(analysis.roots[1])}</Strong>
@@ -302,15 +324,15 @@ export default function QuadraticExplorer() {
                       )}
                     </StepCard>
 
-                    <StepCard num={5} title="Build a table of values"
+                    <StepCard T={T} num={5} title="Build a table of values"
                       expanded={expandedStep === 5} onToggle={() => setExpandedStep(expandedStep === 5 ? null : 5)}>
                       <p>Choose several integer x-values around the turning point (x = {fmtN(analysis.vertexX)}). Substitute each into the equation to find y.</p>
-                      <p style={{ fontSize: 12, color: "#8888aa", marginTop: 4 }}>👉 Click the <strong>Values Table</strong> tab to see the full table for this curve.</p>
+                      <p style={{ fontSize: 12, color: T.textDim, marginTop: 4 }}>👉 Click the <strong>Values Table</strong> tab to see the full table for this curve.</p>
                       <p style={{ marginTop: 8 }}>Notice how the y-values on the left and right of the turning point are <strong>mirror images</strong> — this is because the parabola is perfectly symmetrical.</p>
-                      <p style={{ fontSize: 12, color: "#8888aa" }}>💡 In your exam, you will usually be given a table with some y-values missing, and asked to fill them in.</p>
+                      <p style={{ fontSize: 12, color: T.textDim }}>💡 In your exam, you will usually be given a table with some y-values missing, and asked to fill them in.</p>
                     </StepCard>
 
-                    <StepCard num={6} title="Plot and draw the curve"
+                    <StepCard T={T} num={6} title="Plot and draw the curve"
                       expanded={expandedStep === 6} onToggle={() => setExpandedStep(expandedStep === 6 ? null : 6)}>
                       <p>On graph paper, follow these steps in order:</p>
                       <ol style={{ paddingLeft: 20, lineHeight: 2.2, marginTop: 8, fontSize: 13 }}>
@@ -330,16 +352,16 @@ export default function QuadraticExplorer() {
 
                 {activeTab === "table" && (
                   <div>
-                    <p style={{ fontSize: 13, color: "#9090b0", marginBottom: 12 }}>
+                    <p style={{ fontSize: 13, color: T.textDim, marginBottom: 12 }}>
                       Substitute each x-value into <em>{eqStr}</em> to get y. Key points are highlighted.
                     </p>
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                         <thead>
                           <tr>
-                            <th style={{ padding: "8px 12px", background: "#1e1e32", color: "#a5b4fc", textAlign: "center", border: "1px solid #2e2e50" }}>x</th>
-                            <th style={{ padding: "8px 12px", background: "#1e1e32", color: "#a5b4fc", textAlign: "center", border: "1px solid #2e2e50" }}>y</th>
-                            <th style={{ padding: "8px 12px", background: "#1e1e32", color: "#6b6b80", textAlign: "center", border: "1px solid #2e2e50", fontSize: 11 }}>Note</th>
+                            <th style={{ padding: "8px 12px", background: T.card, color: T.accentMid, textAlign: "center", border: `1px solid ${T.cardBorder}` }}>x</th>
+                            <th style={{ padding: "8px 12px", background: T.card, color: T.accentMid, textAlign: "center", border: `1px solid ${T.cardBorder}` }}>y</th>
+                            <th style={{ padding: "8px 12px", background: T.card, color: T.textMuted, textAlign: "center", border: `1px solid ${T.cardBorder}`, fontSize: 11 }}>Note</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -348,22 +370,22 @@ export default function QuadraticExplorer() {
                             const isRoot = analysis.roots.some(r => Math.abs(x - r) < 0.01);
                             const isYInt = x === 0;
                             let note = "";
-                            let noteColor = "#6b6b80";
+                            let noteColor = T.textMuted;
                             if (isTurning) { note = a > 0 ? "Minimum (turning point)" : "Maximum (turning point)"; noteColor = "#f472b6"; }
                             else if (isRoot) { note = "x-intercept"; noteColor = "#34d399"; }
                             else if (isYInt) { note = "y-intercept"; noteColor = "#fbbf24"; }
                             return (
-                              <tr key={i} style={{ background: isTurning ? "#2a1040" : i % 2 === 0 ? "#13132a" : "#1a1a2e" }}>
-                                <td style={{ padding: "7px 12px", textAlign: "center", fontFamily: "monospace", border: "1px solid #2e2e50", color: isTurning ? "#f472b6" : "#e8e8f0" }}>{x}</td>
-                                <td style={{ padding: "7px 12px", textAlign: "center", fontFamily: "monospace", border: "1px solid #2e2e50", color: isRoot ? "#34d399" : isYInt ? "#fbbf24" : isTurning ? "#f472b6" : "#e8e8f0", fontWeight: (isRoot || isYInt || isTurning) ? "bold" : "normal" }}>{fmtN(y)}</td>
-                                <td style={{ padding: "7px 12px", textAlign: "center", border: "1px solid #2e2e50", fontSize: 11, color: noteColor }}>{note}</td>
+                              <tr key={i} style={{ background: isTurning ? "#2a1040" : i % 2 === 0 ? T.card : "transparent" }}>
+                                <td style={{ padding: "7px 12px", textAlign: "center", fontFamily: "monospace", border: `1px solid ${T.cardBorder}`, color: isTurning ? "#f472b6" : T.text }}>{x}</td>
+                                <td style={{ padding: "7px 12px", textAlign: "center", fontFamily: "monospace", border: `1px solid ${T.cardBorder}`, color: isRoot ? "#34d399" : isYInt ? "#fbbf24" : isTurning ? "#f472b6" : T.text, fontWeight: (isRoot || isYInt || isTurning) ? "bold" : "normal" }}>{fmtN(y)}</td>
+                                <td style={{ padding: "7px 12px", textAlign: "center", border: `1px solid ${T.cardBorder}`, fontSize: 11, color: noteColor }}>{note}</td>
                               </tr>
                             );
                           })}
                         </tbody>
                       </table>
                     </div>
-                    <p style={{ fontSize: 11, color: "#6b6b80", marginTop: 10 }}>
+                    <p style={{ fontSize: 11, color: T.textMuted, marginTop: 10 }}>
                       💡 Notice how the y-values are symmetric on either side of the turning point — this is the mirror-line property of the parabola.
                     </p>
                   </div>
@@ -371,11 +393,11 @@ export default function QuadraticExplorer() {
 
                 {activeTab === "vocab" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <p style={{ fontSize: 13, color: "#9090b0", marginBottom: 4 }}>Key terms you need to know for your exam:</p>
+                    <p style={{ fontSize: 13, color: T.textDim, marginBottom: 4 }}>Key terms you need to know for your exam:</p>
                     {VOCAB.map(({ term, def }) => (
-                      <div key={term} style={{ background: "#1e1e32", border: "1px solid #2e2e50", borderRadius: 8, padding: "12px 14px" }}>
-                        <div style={{ fontWeight: "bold", color: "#c4b5fd", marginBottom: 4 }}>{term}</div>
-                        <div style={{ fontSize: 13, color: "#d0d0e8", lineHeight: 1.6 }}>{def}</div>
+                      <div key={term} style={{ background: T.card, border: `1px solid ${T.cardBorder}`, borderRadius: 8, padding: "12px 14px" }}>
+                        <div style={{ fontWeight: "bold", color: T.accentMid, marginBottom: 4 }}>{term}</div>
+                        <div style={{ fontSize: 13, color: T.textDim, lineHeight: 1.6 }}>{def}</div>
                       </div>
                     ))}
                   </div>
@@ -390,9 +412,9 @@ export default function QuadraticExplorer() {
   );
 }
 
-function StepCard({ num, title, children, expanded, onToggle }) {
+function StepCard({ T, num, title, children, expanded, onToggle }) {
   return (
-    <div style={{ background: "#1e1e32", border: `1px solid ${expanded ? "#6366f1" : "#2e2e50"}`, borderRadius: 8, overflow: "hidden" }}>
+    <div style={{ background: T.card, border: `1px solid ${expanded ? "#6366f1" : T.cardBorder}`, borderRadius: 8, overflow: "hidden" }}>
       <button onClick={onToggle} style={{
         width: "100%", background: "none", border: "none", padding: "12px 14px",
         display: "flex", alignItems: "center", gap: 10, cursor: "pointer", textAlign: "left"
@@ -402,11 +424,11 @@ function StepCard({ num, title, children, expanded, onToggle }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 12, fontWeight: "bold", flexShrink: 0
         }}>{num}</span>
-        <span style={{ fontWeight: "bold", color: "#c4b5fd", fontSize: 14, flex: 1 }}>{title}</span>
-        <span style={{ color: "#6b6b80", fontSize: 14 }}>{expanded ? "▲" : "▼"}</span>
+        <span style={{ fontWeight: "bold", color: T.accentText, fontSize: 14, flex: 1 }}>{title}</span>
+        <span style={{ color: T.textMuted, fontSize: 14 }}>{expanded ? "▲" : "▼"}</span>
       </button>
       {expanded && (
-        <div style={{ padding: "0 14px 14px 48px", fontSize: 13, color: "#d0d0e8", lineHeight: 1.8 }}>
+        <div style={{ padding: "0 14px 14px 48px", fontSize: 13, color: T.textDim, lineHeight: 1.8 }}>
           {children}
         </div>
       )}
@@ -414,12 +436,12 @@ function StepCard({ num, title, children, expanded, onToggle }) {
   );
 }
 
-function CalcBox({ children }) {
+function CalcBox({ T, children }) {
   return (
     <div style={{
-      background: "#0f0f1a", border: "1px solid #2e2e50", borderRadius: 6,
+      background: T.bg, border: `1px solid ${T.cardBorder}`, borderRadius: 6,
       padding: "10px 14px", fontFamily: "monospace", fontSize: 13,
-      color: "#d0d0e8", margin: "8px 0", lineHeight: 1.8
+      color: T.textDim, margin: "8px 0", lineHeight: 1.8
     }}>
       {children}
     </div>

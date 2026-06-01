@@ -271,9 +271,25 @@ const categoryColors = {
 };
 
 export default function JudgesTimeline() {
+  const [dark, setDark] = useState(true);
   const [selected, setSelected] = useState(null);
   const [showCycle, setShowCycle] = useState(false);
   const detailRef = useRef(null);
+
+  const T = {
+    bg:           dark ? 'linear-gradient(180deg, #0c0c1d 0%, #141428 50%, #0c0c1d 100%)' : 'linear-gradient(180deg, #f0f0fc 0%, #f8f8ff 50%, #f0f0fc 100%)',
+    bgSolid:      dark ? '#0c0c1d'                        : '#f0f0fc',
+    card:         dark ? 'rgba(255,255,255,0.04)'          : '#ffffff',
+    cardSolid:    dark ? '#1a1a2e'                         : '#ffffff',
+    border:       dark ? 'rgba(255,255,255,0.08)'          : 'rgba(0,0,0,0.09)',
+    borderAccent: dark ? 'rgba(139,92,246,0.2)'            : 'rgba(99,102,241,0.2)',
+    text:         dark ? '#e8e8f0'                         : '#1a1a2e',
+    textMuted:    dark ? '#8888a8'                         : '#6868a0',
+    textDim:      dark ? '#6b6b80'                         : '#9090b8',
+    accent:       dark ? '#C4B5FD'                         : '#7c3aed',
+    accentSoft:   dark ? 'rgba(139,92,246,0.15)'           : 'rgba(124,58,237,0.10)',
+    headerBorder: dark ? 'rgba(139,92,246,0.2)'            : 'rgba(124,58,237,0.15)',
+  };
 
   useEffect(() => {
     if (selected !== null && detailRef.current) {
@@ -295,8 +311,8 @@ export default function JudgesTimeline() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "linear-gradient(180deg, #0c0c1d 0%, #141428 50%, #0c0c1d 100%)",
-      color: "#e8e8f0",
+      background: T.bg,
+      color: T.text,
       fontFamily: "'Georgia', 'Times New Roman', serif",
       padding: "0",
       overflowX: "hidden"
@@ -304,14 +320,18 @@ export default function JudgesTimeline() {
       {/* Header */}
       <div style={{
         textAlign: "center",
-        padding: "2.5rem 1rem 1.5rem",
-        borderBottom: "1px solid rgba(139,92,246,0.2)"
+        padding: "2rem 1rem 1.5rem",
+        borderBottom: `1px solid ${T.headerBorder}`
       }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: '1rem', maxWidth: 800, margin: '0 auto 1rem' }}>
+          <a href="../../" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.card, color: T.textMuted, fontSize: 13, fontFamily: 'inherit', textDecoration: 'none' }}>&#8962; Home</a>
+          <button onClick={() => setDark(d => !d)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.card, color: T.textMuted, fontSize: 13, fontFamily: 'inherit', cursor: 'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+        </div>
         <div style={{
           fontSize: "0.7rem",
           letterSpacing: "0.3em",
           textTransform: "uppercase",
-          color: "#A78BFA",
+          color: T.accent,
           marginBottom: "0.5rem",
           fontFamily: "'Trebuchet MS', sans-serif"
         }}>The Book of Judges</div>
@@ -319,14 +339,14 @@ export default function JudgesTimeline() {
           fontSize: "1.75rem",
           fontWeight: "700",
           margin: "0 0 0.5rem",
-          background: "linear-gradient(135deg, #C4B5FD 0%, #6EE7B7 100%)",
+          background: dark ? "linear-gradient(135deg, #C4B5FD 0%, #6EE7B7 100%)" : "linear-gradient(135deg, #7c3aed 0%, #059669 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           lineHeight: 1.2
         }}>Timeline of the Judges</h1>
         <p style={{
           fontSize: "0.8rem",
-          color: "#8888a8",
+          color: T.textMuted,
           margin: "0",
           maxWidth: "380px",
           marginLeft: "auto",
@@ -343,9 +363,9 @@ export default function JudgesTimeline() {
         <button
           onClick={() => setShowCycle(!showCycle)}
           style={{
-            background: showCycle ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.05)",
-            border: `1px solid ${showCycle ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.1)"}`,
-            color: showCycle ? "#C4B5FD" : "#8888a8",
+            background: showCycle ? T.accentSoft : "rgba(255,255,255,0.05)",
+            border: showCycle ? `1px solid ${T.borderAccent}` : `1px solid ${T.border}`,
+            color: showCycle ? T.accent : T.textMuted,
             padding: "0.5rem 1rem",
             borderRadius: "20px",
             cursor: "pointer",
@@ -363,15 +383,15 @@ export default function JudgesTimeline() {
         <div style={{
           margin: "0.5rem 1rem 1rem",
           padding: "1rem",
-          background: "rgba(255,255,255,0.03)",
+          background: T.accentSoft,
           borderRadius: "12px",
-          border: "1px solid rgba(255,255,255,0.06)"
+          border: `1px solid ${T.borderAccent}`
         }}>
           <div style={{
             fontSize: "0.7rem",
             textTransform: "uppercase",
             letterSpacing: "0.15em",
-            color: "#8888a8",
+            color: T.textMuted,
             textAlign: "center",
             marginBottom: "0.75rem",
             fontFamily: "'Trebuchet MS', sans-serif"
@@ -420,7 +440,7 @@ export default function JudgesTimeline() {
             alignItems: "center",
             gap: "0.35rem",
             fontSize: "0.6rem",
-            color: "#8888a8",
+            color: T.textMuted,
             fontFamily: "'Trebuchet MS', sans-serif"
           }}>
             <div style={{
@@ -485,7 +505,7 @@ export default function JudgesTimeline() {
                   }}>{item.approxDate}</div>
                   <div style={{
                     fontSize: "0.65rem",
-                    color: "#6b6b80",
+                    color: T.textDim,
                     lineHeight: 1.4
                   }}>{item.note}</div>
                 </div>
@@ -517,8 +537,8 @@ export default function JudgesTimeline() {
                   style={{
                     marginLeft: "3.5rem",
                     padding: "0.85rem 1rem",
-                    background: isSelected ? cat.bg : "rgba(217,119,6,0.04)",
-                    border: `1px solid ${isSelected ? cat.border + "60" : "rgba(217,119,6,0.15)"}`,
+                    background: isSelected ? cat.bg : T.card,
+                    border: `1px solid ${isSelected ? cat.border + "60" : T.border}`,
                     borderRadius: "10px",
                     cursor: "pointer",
                     transition: "all 0.2s",
@@ -538,7 +558,7 @@ export default function JudgesTimeline() {
                     }}>{item.name}</span>
                     <span style={{
                       fontSize: "0.65rem",
-                      color: "#6b6b80",
+                      color: T.textDim,
                       fontFamily: "'Trebuchet MS', sans-serif"
                     }}>{item.ref}</span>
                   </div>
@@ -548,11 +568,11 @@ export default function JudgesTimeline() {
                     marginBottom: "0.3rem",
                     fontFamily: "'Trebuchet MS', sans-serif"
                   }}>
-                    <span style={{ color: "#6b6b80" }}>Likely date:</span> {item.approxDate}
+                    <span style={{ color: T.textDim }}>Likely date:</span> {item.approxDate}
                   </div>
                   <div style={{
                     fontSize: "0.75rem",
-                    color: "#a0a0b8",
+                    color: T.textMuted,
                     fontFamily: "'Trebuchet MS', sans-serif",
                     lineHeight: 1.4
                   }}>{item.keyEvent}</div>
@@ -571,7 +591,7 @@ export default function JudgesTimeline() {
                       <p style={{
                         fontSize: "0.8rem",
                         lineHeight: 1.65,
-                        color: "#c8c8d8",
+                        color: T.text,
                         margin: "0 0 0.75rem",
                         fontFamily: "'Trebuchet MS', sans-serif"
                       }}>{item.summary}</p>
@@ -588,10 +608,10 @@ export default function JudgesTimeline() {
                             fontWeight: "700",
                             color: "#FBBF24",
                             marginBottom: "0.2rem"
-                          }}>{ev.title} <span style={{ fontWeight: "400", color: "#6b6b80", fontSize: "0.65rem" }}>({ev.ref})</span></div>
+                          }}>{ev.title} <span style={{ fontWeight: "400", color: T.textDim, fontSize: "0.65rem" }}>({ev.ref})</span></div>
                           <div style={{
                             fontSize: "0.75rem",
-                            color: "#b0b0c0",
+                            color: T.textMuted,
                             lineHeight: 1.5,
                             fontFamily: "'Trebuchet MS', sans-serif"
                           }}>{ev.detail}</div>
@@ -630,8 +650,8 @@ export default function JudgesTimeline() {
                 style={{
                   marginLeft: "3.5rem",
                   padding: "0.85rem 1rem",
-                  background: isSelected ? cat.bg : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${isSelected ? cat.border + "60" : "rgba(255,255,255,0.06)"}`,
+                  background: isSelected ? cat.bg : T.card,
+                  border: `1px solid ${isSelected ? cat.border + "60" : T.border}`,
                   borderRadius: "10px",
                   cursor: "pointer",
                   transition: "all 0.2s",
@@ -661,7 +681,7 @@ export default function JudgesTimeline() {
                   }}>{item.name}</span>
                   <span style={{
                     fontSize: "0.65rem",
-                    color: "#6b6b80",
+                    color: T.textDim,
                     fontFamily: "'Trebuchet MS', sans-serif"
                   }}>{item.ref}</span>
                 </div>
@@ -676,7 +696,7 @@ export default function JudgesTimeline() {
 
                 <div style={{
                   fontSize: "0.75rem",
-                  color: "#a0a0b8",
+                  color: T.textMuted,
                   fontFamily: "'Trebuchet MS', sans-serif",
                   lineHeight: 1.4
                 }}>{item.keyEvent}</div>
@@ -704,7 +724,7 @@ export default function JudgesTimeline() {
                     </span>
                   )}
                   {item.region && (
-                    <span style={badgeStyle("rgba(255,255,255,0.04)", "#8888a8", "rgba(255,255,255,0.08)")}>
+                    <span style={badgeStyle(T.card, T.textMuted, T.border)}>
                       {item.region}
                     </span>
                   )}
@@ -747,7 +767,7 @@ export default function JudgesTimeline() {
                         marginBottom: "0.3rem",
                         fontFamily: "'Trebuchet MS', sans-serif"
                       }}>
-                        <span style={{ color: "#6b6b80" }}>Oppressor:</span> {item.oppressor}
+                        <span style={{ color: T.textDim }}>Oppressor:</span> {item.oppressor}
                       </div>
                     )}
                     {item.tribe && (
@@ -757,13 +777,13 @@ export default function JudgesTimeline() {
                         marginBottom: "0.4rem",
                         fontFamily: "'Trebuchet MS', sans-serif"
                       }}>
-                        <span style={{ color: "#6b6b80" }}>Tribe:</span> {item.tribe}
+                        <span style={{ color: T.textDim }}>Tribe:</span> {item.tribe}
                       </div>
                     )}
                     <p style={{
                       fontSize: "0.8rem",
                       lineHeight: 1.65,
-                      color: "#c8c8d8",
+                      color: T.text,
                       margin: 0,
                       fontFamily: "'Trebuchet MS', sans-serif"
                     }}>{item.summary}</p>
@@ -789,11 +809,11 @@ export default function JudgesTimeline() {
           <div style={{
             marginLeft: "3.5rem",
             padding: "0.75rem 1rem",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px dashed rgba(255,255,255,0.08)",
+            background: T.card,
+            border: `1px dashed ${T.border}`,
             borderRadius: "10px",
             fontSize: "0.75rem",
-            color: "#6b6b80",
+            color: T.textDim,
             fontFamily: "'Trebuchet MS', sans-serif",
             lineHeight: 1.5
           }}>
@@ -807,14 +827,14 @@ export default function JudgesTimeline() {
         textAlign: "center",
         padding: "1rem 1.5rem 2rem",
         fontSize: "0.65rem",
-        color: "#555570",
+        color: T.textDim,
         fontFamily: "'Trebuchet MS', sans-serif",
         lineHeight: 1.6,
-        borderTop: "1px solid rgba(255,255,255,0.04)"
+        borderTop: `1px solid ${T.border}`
       }}>
         "In those days there was no king in Israel. Everyone did what was right in his own eyes." — Judges 21:25
         <br />
-        <span style={{ color: "#444460" }}>
+        <span style={{ color: T.textDim }}>
           Tap any entry to expand. Dates follow a conservative 480-year framework (1 Kings 6:1) with regional overlaps. All dates are approximate.
         </span>
       </div>

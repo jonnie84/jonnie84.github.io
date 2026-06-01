@@ -44,14 +44,14 @@ function glucRiskRandom(g) { if (!g) return null; if (g < 7.8) return RISK.norma
 function hba1cRisk(h) { if (!h) return null; if (h < 5.7) return RISK.normal; if (h < 6.5) return { ...RISK.borderline, label: "Prediabetic" }; return { ...RISK.high, label: "Diabetic Range" }; }
 
 /* ── sub-components ── */
-function Toggle({ label, active, onToggle, style: sx }) {
+function Toggle({ label, active, onToggle, style: sx, T }) {
   return (
     <button onClick={onToggle} style={{
       display: "inline-flex", alignItems: "center", gap: 7,
-      background: active ? "rgba(99,102,241,0.12)" : "rgba(255,255,255,0.03)",
-      border: `1.5px solid ${active ? "rgba(99,102,241,0.45)" : "rgba(255,255,255,0.07)"}`,
+      background: active ? T.accentSoft : "rgba(255,255,255,0.03)",
+      border: `1.5px solid ${active ? "rgba(99,102,241,0.45)" : T.border}`,
       borderRadius: 7, padding: "5px 12px", fontSize: 11, fontWeight: 600,
-      color: active ? "#a5b4fc" : "#64748b", cursor: "pointer", transition: "all 0.15s", ...sx,
+      color: active ? T.accentText : T.textMuted, cursor: "pointer", transition: "all 0.15s", ...sx,
     }}>
       <span style={{ width: 7, height: 7, borderRadius: "50%", background: active ? "#818cf8" : "#475569", flexShrink: 0 }} />
       {label}
@@ -91,17 +91,17 @@ function MetricCard({ title, value, unit, risk, what, ranges }) {
   );
 }
 
-function InputField({ field, value, onChange, unit }) {
+function InputField({ field, value, onChange, unit, T }) {
   const suf = (field.lipid || field.isTrig) ? ` (${unit === "mgdl" ? "mg/dL" : "mmol/L"})` : field.isGluc ? ` (${unit === "mgdl" ? "mg/dL" : "mmol/L"})` : "";
   const base = {
-    width: "100%", padding: "8px 11px", border: "1.5px solid rgba(255,255,255,0.08)",
+    width: "100%", padding: "8px 11px", border: `1.5px solid ${T.border2}`,
     borderRadius: 7, fontSize: 13, fontFamily: "'JetBrains Mono', monospace",
-    background: "rgba(255,255,255,0.04)", color: "#e2e8f0", outline: "none",
+    background: T.inputBg, color: T.text, outline: "none",
     transition: "border-color 0.15s", boxSizing: "border-box",
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <label style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8" }}>{field.label}{suf}</label>
+      <label style={{ fontSize: 11, fontWeight: 600, color: T.textDim }}>{field.label}{suf}</label>
       {field.type === "select" ? (
         <select style={{ ...base, cursor: "pointer" }} value={value} onChange={e => onChange(field.key, e.target.value)}>
           {field.opts.map(o => <option key={o.v} value={o.v} style={{ background: "#1e1e2e" }}>{o.l}</option>)}
@@ -110,17 +110,17 @@ function InputField({ field, value, onChange, unit }) {
         <input type="number" style={base}
           placeholder={field.ph || ((field.lipid || field.isTrig || field.isGluc) ? (unit === "mgdl" ? "mg/dL" : "mmol/L") : "")}
           step={field.step || "1"} value={value} onChange={e => onChange(field.key, e.target.value)}
-          onFocus={e => e.target.style.borderColor = "#6366f1"}
-          onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+          onFocus={e => e.target.style.borderColor = T.inputFocusBorder}
+          onBlur={e => e.target.style.borderColor = T.border2} />
       )}
     </div>
   );
 }
 
-function SectionHeader({ title, children }) {
+function SectionHeader({ title, children, T }) {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8, paddingBottom: 5, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</div>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8, paddingBottom: 5, borderBottom: `1px solid ${T.border}` }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</div>
       {children}
     </div>
   );
@@ -318,6 +318,25 @@ function astAltRisk(r) { if (!r) return null; if (r < 0.8) return { ...RISK.low,
 
 /* ── main ── */
 export default function HealthAssessment() {
+  const [dark, setDark] = useState(true);
+
+  const T = {
+    bg:       dark ? '#0c0c16'                   : '#f4f4fc',
+    headerBg: dark ? '#111126'                   : '#eeeef8',
+    card:     dark ? 'rgba(255,255,255,0.02)'    : '#ffffff',
+    cardSolid:dark ? '#1a1a2e'                   : '#ffffff',
+    border:   dark ? 'rgba(255,255,255,0.05)'    : 'rgba(0,0,0,0.09)',
+    border2:  dark ? 'rgba(255,255,255,0.08)'    : 'rgba(0,0,0,0.12)',
+    text:     dark ? '#e2e8f0'                   : '#1a1a2e',
+    textMuted:dark ? '#64748b'                   : '#6868a0',
+    textDim:  dark ? '#94a3b8'                   : '#4a4a6a',
+    accent:   '#6366f1',
+    accentSoft: dark ? 'rgba(99,102,241,0.12)'   : 'rgba(99,102,241,0.10)',
+    accentText: dark ? '#a5b4fc'                 : '#6366f1',
+    inputBg:  dark ? 'rgba(255,255,255,0.04)'    : 'rgba(0,0,0,0.03)',
+    inputFocusBorder: '#6366f1',
+  };
+
   const [inputs, setInputs] = useState({
     yearOfBirth: "", gender: "", height: "", weight: "", waist: "",
     systolic: "", diastolic: "",
@@ -504,30 +523,28 @@ export default function HealthAssessment() {
 
   const gridFields = (fields) => (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))", gap: 10 }}>
-      {fields.map(f => <InputField key={f.key} field={f} value={inputs[f.key]} onChange={set} unit={f.lipid || f.isTrig ? lipidUnit : f.isGluc ? glucUnit : "mmol"} />)}
+      {fields.map(f => <InputField key={f.key} field={f} value={inputs[f.key]} onChange={set} unit={f.lipid || f.isTrig ? lipidUnit : f.isGluc ? glucUnit : "mmol"} T={T} />)}
     </div>
   );
 
   /* ── shared text input style ── */
   const textInputStyle = {
-    width: "100%", padding: "8px 11px", border: "1.5px solid rgba(255,255,255,0.08)",
+    width: "100%", padding: "8px 11px", border: `1.5px solid ${T.border2}`,
     borderRadius: 7, fontSize: 13, fontFamily: "'JetBrains Mono', monospace",
-    background: "rgba(255,255,255,0.04)", color: "#e2e8f0", outline: "none",
+    background: T.inputBg, color: T.text, outline: "none",
     transition: "border-color 0.15s", boxSizing: "border-box",
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0c0c16", color: "#e2e8f0", fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px" }}>
-
-        {/* ── Header ── */}
-        <div style={{ marginBottom: 22, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end", gap: 12 }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#818cf8", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Health Dashboard</div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f1f5f9", margin: 0, lineHeight: 1.2 }}>Basic Health Assessment</h1>
-            <p style={{ fontSize: 13, color: "#64748b", margin: "5px 0 0" }}>Enter any available metrics. Only relevant insights are shown.</p>
+      {/* ── Full-width sticky header bar ── */}
+      <div style={{ background: T.headerBg, borderBottom: `1px solid ${T.border}`, padding: "16px 20px", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.accent, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>Health Dashboard</div>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2 }}>Basic Health Assessment</h1>
           </div>
           {metrics.length > 0 && (
             <div style={{ display: "flex", gap: 14, fontSize: 12, fontWeight: 600, flexWrap: "wrap" }}>
@@ -536,68 +553,78 @@ export default function HealthAssessment() {
               <span style={{ color: "#ef4444" }}>{counts.red} attention</span>
             </div>
           )}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <a href="../../" style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:13,fontFamily:'inherit',textDecoration:'none' }}>⌂ Home</a>
+            <button onClick={() => setDark(d => !d)} style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:13,fontFamily:'inherit',cursor:'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+          </div>
         </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px" }}>
+        {/* subtitle below header */}
+        <p style={{ fontSize: 13, color: T.textMuted, margin: "0 0 18px" }}>Enter any available metrics. Only relevant insights are shown.</p>
 
         {/* ── Input panel ── */}
-        <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.05)", padding: "20px 18px 14px", marginBottom: 22 }}>
+        <div style={{ background: T.card, borderRadius: 16, border: `1px solid ${T.border}`, padding: "20px 18px 14px", marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1", margin: 0 }}>Input Metrics</h2>
-            <button onClick={clear} style={{ background: "none", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 7, padding: "5px 14px", fontSize: 11, fontWeight: 600, color: "#64748b", cursor: "pointer" }}>Clear All</button>
+            <h2 style={{ fontSize: 14, fontWeight: 700, color: T.textDim, margin: 0 }}>Input Metrics</h2>
+            <button onClick={clear} style={{ background: "none", border: `1px solid ${T.border2}`, borderRadius: 7, padding: "5px 14px", fontSize: 11, fontWeight: 600, color: T.textMuted, cursor: "pointer" }}>Clear All</button>
           </div>
 
           {/* Snapshot Info */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Snapshot Info" />
+            <SectionHeader title="Snapshot Info" T={T} />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))", gap: 10 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8" }}>Name</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: T.textDim }}>Name</label>
                 <input type="text" style={textInputStyle} placeholder="e.g. John" value={userName} onChange={e => setUserName(e.target.value)}
-                  onFocus={e => e.target.style.borderColor = "#6366f1"}
-                  onBlur={e  => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                  onFocus={e => e.target.style.borderColor = T.inputFocusBorder}
+                  onBlur={e  => e.target.style.borderColor = T.border2} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8" }}>Assessment Date</label>
-                <input type="date" style={{ ...textInputStyle, colorScheme: "dark" }} value={assessDate} onChange={e => setAssessDate(e.target.value)}
-                  onFocus={e => e.target.style.borderColor = "#6366f1"}
-                  onBlur={e  => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                <label style={{ fontSize: 11, fontWeight: 600, color: T.textDim }}>Assessment Date</label>
+                <input type="date" style={{ ...textInputStyle, colorScheme: dark ? "dark" : "light" }} value={assessDate} onChange={e => setAssessDate(e.target.value)}
+                  onFocus={e => e.target.style.borderColor = T.inputFocusBorder}
+                  onBlur={e  => e.target.style.borderColor = T.border2} />
               </div>
             </div>
           </div>
 
           {/* Basic Info */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Basic Info" />
+            <SectionHeader title="Basic Info" T={T} />
             {gridFields(FIELDS_BASIC)}
           </div>
 
           {/* Body */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Body Measurements">
-              <Toggle label={asianBMI ? "Asian BMI" : "WHO BMI"} active={asianBMI} onToggle={() => setAsianBMI(p => !p)} />
+            <SectionHeader title="Body Measurements" T={T}>
+              <Toggle label={asianBMI ? "Asian BMI" : "WHO BMI"} active={asianBMI} onToggle={() => setAsianBMI(p => !p)} T={T} />
             </SectionHeader>
             {gridFields(FIELDS_BODY)}
           </div>
 
           {/* BP */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Blood Pressure" />
+            <SectionHeader title="Blood Pressure" T={T} />
             {gridFields(FIELDS_BP)}
           </div>
 
           {/* Lipid */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Lipid Profile">
-              <Toggle label={lipidUnit === "mmol" ? "mmol/L" : "mg/dL"} active={lipidUnit === "mgdl"} onToggle={() => setLipidUnit(p => p === "mmol" ? "mgdl" : "mmol")} />
+            <SectionHeader title="Lipid Profile" T={T}>
+              <Toggle label={lipidUnit === "mmol" ? "mmol/L" : "mg/dL"} active={lipidUnit === "mgdl"} onToggle={() => setLipidUnit(p => p === "mmol" ? "mgdl" : "mmol")} T={T} />
             </SectionHeader>
             {gridFields(FIELDS_LIPID)}
           </div>
 
           {/* Glucose */}
           <div style={{ marginBottom: 16 }}>
-            <SectionHeader title="Glucose Profile">
+            <SectionHeader title="Glucose Profile" T={T}>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Toggle label={fasting ? "Fasting" : "Non-Fasting"} active={!fasting} onToggle={() => setFasting(p => !p)} />
-                <Toggle label={glucUnit === "mmol" ? "mmol/L" : "mg/dL"} active={glucUnit === "mgdl"} onToggle={() => setGlucUnit(p => p === "mmol" ? "mgdl" : "mmol")} />
+                <Toggle label={fasting ? "Fasting" : "Non-Fasting"} active={!fasting} onToggle={() => setFasting(p => !p)} T={T} />
+                <Toggle label={glucUnit === "mmol" ? "mmol/L" : "mg/dL"} active={glucUnit === "mgdl"} onToggle={() => setGlucUnit(p => p === "mmol" ? "mgdl" : "mmol")} T={T} />
               </div>
             </SectionHeader>
             {gridFields(fasting ? FIELDS_GLUC_FASTING : FIELDS_GLUC_RANDOM)}
@@ -605,7 +632,7 @@ export default function HealthAssessment() {
 
           {/* Liver */}
           <div style={{ marginBottom: 8 }}>
-            <SectionHeader title="Liver Function" />
+            <SectionHeader title="Liver Function" T={T} />
             {gridFields(FIELDS_LIVER)}
           </div>
         </div>
@@ -619,45 +646,45 @@ export default function HealthAssessment() {
             {/* Results header */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                <h2 style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1", margin: 0 }}>Results</h2>
-                <span style={{ fontSize: 12, color: "#475569" }}>{metrics.length} metrics</span>
+                <h2 style={{ fontSize: 14, fontWeight: 700, color: T.textDim, margin: 0 }}>Results</h2>
+                <span style={{ fontSize: 12, color: T.textMuted }}>{metrics.length} metrics</span>
               </div>
 
               {/* Action buttons */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                 {snapshotMsg && <span style={{ fontSize: 11, color: "#34d399", fontWeight: 600 }}>{snapshotMsg}</span>}
-                {pdfMsg && <span style={{ fontSize: 11, color: "#a5b4fc", fontWeight: 600, maxWidth: 200, lineHeight: 1.4 }}>{pdfMsg}</span>}
+                {pdfMsg && <span style={{ fontSize: 11, color: T.accentText, fontWeight: 600, maxWidth: 200, lineHeight: 1.4 }}>{pdfMsg}</span>}
 
                 {/* PDF export */}
                 <button onClick={handlePDF} style={{
-                  background: "rgba(99,102,241,0.12)", border: "1.5px solid rgba(99,102,241,0.45)",
+                  background: T.accentSoft, border: "1.5px solid rgba(99,102,241,0.45)",
                   borderRadius: 8, padding: "6px 14px", fontSize: 11, fontWeight: 600,
-                  color: "#a5b4fc", cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap",
+                  color: T.accentText, cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap",
                 }}
                   onMouseOver={e => e.currentTarget.style.background = "rgba(99,102,241,0.22)"}
-                  onMouseOut={e  => e.currentTarget.style.background = "rgba(99,102,241,0.12)"}>
+                  onMouseOut={e  => e.currentTarget.style.background = T.accentSoft}>
                   Save HTML
                 </button>
 
                 {/* Copy */}
                 <button onClick={copySnapshot} style={{
-                  background: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(255,255,255,0.1)",
+                  background: T.inputBg, border: `1.5px solid ${T.border2}`,
                   borderRadius: 8, padding: "6px 14px", fontSize: 11, fontWeight: 600,
-                  color: "#94a3b8", cursor: "pointer", transition: "all 0.15s",
+                  color: T.textMuted, cursor: "pointer", transition: "all 0.15s",
                 }}
                   onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
-                  onMouseOut={e  => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}>
+                  onMouseOut={e  => e.currentTarget.style.background = T.inputBg}>
                   Copy .txt
                 </button>
 
                 {/* Save .txt */}
                 <button onClick={saveSnapshot} style={{
-                  background: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(255,255,255,0.1)",
+                  background: T.inputBg, border: `1.5px solid ${T.border2}`,
                   borderRadius: 8, padding: "6px 14px", fontSize: 11, fontWeight: 600,
-                  color: "#94a3b8", cursor: "pointer", transition: "all 0.15s",
+                  color: T.textMuted, cursor: "pointer", transition: "all 0.15s",
                 }}
                   onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
-                  onMouseOut={e  => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}>
+                  onMouseOut={e  => e.currentTarget.style.background = T.inputBg}>
                   Save .txt
                 </button>
               </div>
@@ -669,14 +696,14 @@ export default function HealthAssessment() {
             </div>
 
             {/* Disclaimer */}
-            <div style={{ marginTop: 20, padding: "12px 16px", background: "rgba(255,255,255,0.02)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)" }}>
-              <p style={{ fontSize: 11, color: "#475569", margin: 0, lineHeight: 1.6 }}>
-                <strong style={{ color: "#64748b" }}>Disclaimer:</strong> For informational purposes only — not medical advice. Reference ranges vary by laboratory, population, and individual risk factors. All lipid and glucose calculations use mmol/L internally. Consult a healthcare professional for interpretation of your results.
+            <div style={{ marginTop: 20, padding: "12px 16px", background: T.card, borderRadius: 10, border: `1px solid ${T.border}` }}>
+              <p style={{ fontSize: 11, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
+                <strong style={{ color: T.textDim }}>Disclaimer:</strong> For informational purposes only — not medical advice. Reference ranges vary by laboratory, population, and individual risk factors. All lipid and glucose calculations use mmol/L internally. Consult a healthcare professional for interpretation of your results.
               </p>
             </div>
           </>
         ) : (
-          <div style={{ textAlign: "center", padding: "48px 20px", color: "#334155" }}>
+          <div style={{ textAlign: "center", padding: "48px 20px", color: T.textMuted }}>
             <div style={{ fontSize: 36, marginBottom: 10, opacity: 0.5 }}>📊</div>
             <div style={{ fontSize: 14, fontWeight: 500 }}>Enter some values above to see your health metrics</div>
           </div>

@@ -211,7 +211,7 @@ const MINI_BOARD_PX=MINI_GRID+MINI_INSET*2+MINI_BORDER*2;
 
 // ─── Shared Board component (game mode) ──────────────────────────────────────
 
-function Board({ pieces, selectedId, onSelectPiece, onDragPreview, onDragCommit, solved }) {
+function Board({ pieces, selectedId, onSelectPiece, onDragPreview, onDragCommit, solved, T }) {
   const boardRef = useRef(null);
   const dragState = useRef(null);
 
@@ -239,13 +239,15 @@ function Board({ pieces, selectedId, onSelectPiece, onDragPreview, onDragCommit,
     if(ds.lastDelta!==0) onDragCommit(ds.id,ds.orient,ds.lastDelta,ds.startRow,ds.startCol);
     dragState.current=null;
   }
+  const boardBg = T ? T.boardBg : "#090914";
+  const cellBg = T ? (T.boardBg === "#090914" ? "#252545" : "#d0d0e8") : "#252545";
   return (
     <div ref={boardRef} onMouseMove={onMove} onMouseUp={onUp} onTouchMove={onMove} onTouchEnd={onUp}
       style={{position:"relative",width:BOARD_PX,height:BOARD_PX,flexShrink:0,
-        backgroundColor:"#090914",borderRadius:12,touchAction:"none",userSelect:"none",
+        backgroundColor:boardBg,borderRadius:12,touchAction:"none",userSelect:"none",
         border:solved?"4px solid #4ade80":"4px solid #2a2a4a",transition:"border-color 0.3s",boxSizing:"border-box"}}>
       {Array.from({length:6},(_,r)=>Array.from({length:6},(_,c)=>(
-        <div key={`${r}-${c}`} style={{position:"absolute",left:INSET+c*STEP,top:INSET+r*STEP,width:CELL,height:CELL,backgroundColor:"#252545",borderRadius:5}}/>
+        <div key={`${r}-${c}`} style={{position:"absolute",left:INSET+c*STEP,top:INSET+r*STEP,width:CELL,height:CELL,backgroundColor:cellBg,borderRadius:5}}/>
       )))}
       {pieces.map(p=>{
         const bg=pcolour(p.id),isRed=p.id==="red",isSel=p.id===selectedId;
@@ -269,7 +271,7 @@ function Board({ pieces, selectedId, onSelectPiece, onDragPreview, onDragCommit,
 
 // ─── Editor Board component ───────────────────────────────────────────────────
 
-function EditorBoard({ pieces, onCellClick, previewPiece, redMode, activeColour }) {
+function EditorBoard({ pieces, onCellClick, previewPiece, redMode, activeColour, T }) {
   const boardRef = useRef(null);
   const [hoverCell, setHoverCell] = useState(null);
 
@@ -320,6 +322,9 @@ function EditorBoard({ pieces, onCellClick, previewPiece, redMode, activeColour 
   );
   const previewColour    = redMode ? "#ef4444" : (activeColour||"#6366f1");
 
+  const boardBg = T ? T.boardBg : "#090914";
+  const cellBg = T ? (T.boardBg === "#090914" ? "#252545" : "#d0d0e8") : "#252545";
+
   return (
     <div ref={boardRef}
       onMouseMove={e=>{const c=getCell(e);setHoverCell(c);}}
@@ -327,13 +332,13 @@ function EditorBoard({ pieces, onCellClick, previewPiece, redMode, activeColour 
       onClick={e=>{const c=getCell(e);if(c)onCellClick(c);}}
       onTouchStart={e=>{const c=getCell(e);if(c){setHoverCell(c);onCellClick(c);}}}
       style={{position:"relative",width:BOARD_PX,height:BOARD_PX,flexShrink:0,
-        backgroundColor:"#090914",borderRadius:12,touchAction:"none",userSelect:"none",
+        backgroundColor:boardBg,borderRadius:12,touchAction:"none",userSelect:"none",
         border:"4px solid #2a2a4a",cursor:"crosshair",boxSizing:"border-box"}}>
       {Array.from({length:6},(_,r)=>Array.from({length:6},(_,c)=>{
         const isRowHint = redMode && r===2;
         const isPreview = previewCells&&previewCells.some(p=>p.row===r&&p.col===c);
         const isHover   = !isPreview&&hoverCell&&hoverCell.row===r&&hoverCell.col===c;
-        let bg = "#252545";
+        let bg = cellBg;
         if(isPreview) bg = previewValid ? `${previewColour}44` : "rgba(239,68,68,0.25)";
         else if(isRowHint) bg = "rgba(239,68,68,0.12)";
         else if(isHover) bg = "rgba(255,255,255,0.07)";
@@ -394,16 +399,19 @@ function MiniBoard({ pieces }) {
 
 // ─── Solver Panel ─────────────────────────────────────────────────────────────
 
-function SolverPanel({ pieces, solution, solving, solverStep, setSolverStep }) {
+function SolverPanel({ pieces, solution, solving, solverStep, setSolverStep, T }) {
   function getSolverPieces(step) {
     let p=pieces.map(x=>({...x}));
     for(let i=0;i<step;i++) p=p.map(x=>x.id===solution[i].id?solution[i].newPos:x);
     return p;
   }
-  const nb=(dis)=>({border:"none",borderRadius:6,padding:"4px 9px",cursor:dis?"not-allowed":"pointer",fontSize:"0.82rem",backgroundColor:"#252540",color:dis?"#3b3b52":"#a0a0b8"});
+  const card = T ? T.card : "#1e1e32";
+  const textDim = T ? T.textDim : "#a0a0b8";
+  const border = T ? T.border : "rgba(255,255,255,0.06)";
+  const nb=(dis)=>({border:"none",borderRadius:6,padding:"4px 9px",cursor:dis?"not-allowed":"pointer",fontSize:"0.82rem",backgroundColor:T?(T.cardAlt||"#252540"):"#252540",color:dis?"#3b3b52":textDim});
   return (
-    <div style={{backgroundColor:"#1e1e32",borderRadius:10,padding:14,maxWidth:360,margin:"0 auto 14px"}}>
-      {solving && <div style={{color:"#a0a0b8",fontSize:"0.82rem",textAlign:"center"}}>Computing optimal solution…</div>}
+    <div style={{backgroundColor:card,borderRadius:10,padding:14,maxWidth:360,margin:"0 auto 14px",border:`1px solid ${border}`}}>
+      {solving && <div style={{color:textDim,fontSize:"0.82rem",textAlign:"center"}}>Computing optimal solution…</div>}
       {!solving && solution && solution.length===0 && <div style={{color:"#f87171",fontSize:"0.82rem",textAlign:"center"}}>No solution found — board may be unsolvable.</div>}
       {!solving && solution && solution.length>0 && (<>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
@@ -411,7 +419,7 @@ function SolverPanel({ pieces, solution, solving, solverStep, setSolverStep }) {
           <div style={{display:"flex",gap:6}}>
             <button onClick={()=>setSolverStep(0)} disabled={solverStep===0} style={nb(solverStep===0)}>⏮</button>
             <button onClick={()=>setSolverStep(s=>Math.max(0,s-1))} disabled={solverStep===0} style={nb(solverStep===0)}>◀</button>
-            <span style={{fontSize:"0.78rem",color:"#a0a0b8",alignSelf:"center",minWidth:52,textAlign:"center"}}>{solverStep}/{solution.length}</span>
+            <span style={{fontSize:"0.78rem",color:textDim,alignSelf:"center",minWidth:52,textAlign:"center"}}>{solverStep}/{solution.length}</span>
             <button onClick={()=>setSolverStep(s=>Math.min(solution.length,s+1))} disabled={solverStep===solution.length} style={nb(solverStep===solution.length)}>▶</button>
             <button onClick={()=>setSolverStep(solution.length)} disabled={solverStep===solution.length} style={nb(solverStep===solution.length)}>⏭</button>
           </div>
@@ -424,7 +432,7 @@ function SolverPanel({ pieces, solution, solving, solverStep, setSolverStep }) {
             const piece=getSolverPieces(i).find(p=>p.id===mv.id);
             const dir=mv.newPos.orient==="H"?(mv.newPos.col>(piece?.col??0)?"right":"left"):(mv.newPos.row>(piece?.row??0)?"down":"up");
             return (<li key={i} onClick={()=>setSolverStep(i+1)} style={{padding:"2px 0",cursor:"pointer",
-              color:i<solverStep?"#818cf8":i===solverStep?"#e8e8f0":"#4b5563",fontWeight:i===solverStep?700:400}}>
+              color:i<solverStep?"#818cf8":i===solverStep?(T?T.text:"#e8e8f0"):"#4b5563",fontWeight:i===solverStep?700:400}}>
               <span style={{padding:"1px 5px",borderRadius:3,marginRight:4,backgroundColor:pcolour(mv.id),color:fgcolour(pcolour(mv.id)),fontSize:"0.7rem",fontWeight:700}}>
                 {mv.id==="red"?"★":mv.id.toUpperCase()}
               </span>{dir}
@@ -438,7 +446,7 @@ function SolverPanel({ pieces, solution, solving, solverStep, setSolverStep }) {
 
 // ─── JSON Importer ────────────────────────────────────────────────────────────
 
-function JsonImporter({ onLoad }) {
+function JsonImporter({ onLoad, T }) {
   const [text, setText] = useState("");
   const [error, setError] = useState("");
   const fileRef = useRef(null);
@@ -487,27 +495,32 @@ function JsonImporter({ onLoad }) {
     e.target.value = "";
   }
 
+  const cardAlt = T ? T.cardAlt : "#252540";
+  const textDim = T ? T.textDim : "#a0a0b8";
+  const border = T ? T.border : "1px solid #3b3b52";
+  const textColor = T ? T.text : "#e8e8f0";
+
   return (
     <div>
       <div style={{display:"flex",gap:8,marginBottom:6}}>
         <button onClick={()=>fileRef.current.click()}
           style={{border:"none",borderRadius:7,padding:"7px 12px",cursor:"pointer",
-            fontWeight:600,fontSize:"0.78rem",backgroundColor:"#252540",color:"#a0a0b8",flex:1}}>
+            fontWeight:600,fontSize:"0.78rem",backgroundColor:cardAlt,color:textDim,flex:1}}>
           📁 Upload JSON file
         </button>
         <input ref={fileRef} type="file" accept=".json,application/json" onChange={handleFile} style={{display:"none"}}/>
       </div>
       <textarea value={text} onChange={e=>{setText(e.target.value);setError("");}}
         placeholder='Or paste JSON here…'
-        style={{width:"100%",height:72,backgroundColor:"#12122a",color:"#e8e8f0",
-          border:`1px solid ${error?"#f87171":"#3b3b52"}`,borderRadius:7,padding:"8px 10px",
+        style={{width:"100%",height:72,backgroundColor:T?T.bg:"#12122a",color:textColor,
+          border:`1px solid ${error?"#f87171":(T?"rgba(0,0,0,0.15)":"#3b3b52")}`,borderRadius:7,padding:"8px 10px",
           fontSize:"0.68rem",fontFamily:"monospace",resize:"none",
           boxSizing:"border-box",outline:"none",marginBottom:6}}/>
       {error && <div style={{fontSize:"0.72rem",color:"#f87171",marginBottom:6}}>{error}</div>}
       <button onClick={()=>tryLoad(text)} disabled={!text.trim()}
         style={{border:"none",borderRadius:7,padding:"7px 14px",cursor:text.trim()?"pointer":"not-allowed",
           fontWeight:600,fontSize:"0.82rem",width:"100%",
-          backgroundColor:text.trim()?"#6366f1":"#252540",
+          backgroundColor:text.trim()?"#6366f1":cardAlt,
           color:text.trim()?"#fff":"#3b3b52"}}>
         Load Board
       </button>
@@ -529,7 +542,7 @@ const COLOUR_TO_ID = {
   [EDITOR_COLOURS[7]]: "h",
 };
 
-function EditorScreen({ onBack, onPlay, onSave }) {
+function EditorScreen({ onBack, onPlay, onSave, T, dark, setDark }) {
   const makeRed = (col=0) => ({id:"red",row:2,col,len:2,orient:"H"});
 
   const [tool, setTool]               = useState("solve");
@@ -637,10 +650,18 @@ function EditorScreen({ onBack, onPlay, onSave }) {
   const jsonText = JSON.stringify(pieces, null, 2);
   const previewPiece = tool==="place" ? {len:pieceLen,orient:pieceOrient} : null;
 
+  const bg = T ? T.bg : "#0f0f1a";
+  const text = T ? T.text : "#e8e8f0";
+  const card = T ? T.card : "#1e1e32";
+  const cardAlt = T ? T.cardAlt : "#252540";
+  const textDim = T ? T.textDim : "#a0a0b8";
+  const textMuted = T ? T.textMuted : "#6b6b80";
+  const border = T ? T.border : "rgba(255,255,255,0.06)";
+
   const btn={border:"none",borderRadius:8,padding:"8px 14px",cursor:"pointer",fontWeight:600,fontSize:"0.82rem"};
   const toolBtn=(active,col)=>({...btn,
-    backgroundColor:active?(col||"#6366f1"):"#1e1e32",
-    color:active?"#fff":"#a0a0b8",padding:"7px 12px"});
+    backgroundColor:active?(col||"#6366f1"):card,
+    color:active?"#fff":textDim,padding:"7px 12px"});
 
   const hintText = {
     solve: "Board is solved automatically. Switch to Place or Erase to edit.",
@@ -650,11 +671,11 @@ function EditorScreen({ onBack, onPlay, onSave }) {
   }[tool] || "";
 
   return (
-    <div style={{backgroundColor:"#0f0f1a",minHeight:"100vh",color:"#e8e8f0",fontFamily:"sans-serif",padding:16,boxSizing:"border-box"}}>
+    <div style={{backgroundColor:bg,minHeight:"100vh",color:text,fontFamily:"sans-serif",padding:16,boxSizing:"border-box"}}>
       <div style={{display:"flex",alignItems:"center",marginBottom:14}}>
-        <button onClick={onBack} style={{...btn,backgroundColor:"#1e1e32",color:"#a0a0b8",padding:"6px 12px",marginRight:10}}>🎮 Game Mode</button>
+        <button onClick={onBack} style={{...btn,backgroundColor:card,color:textDim,padding:"6px 12px",marginRight:10}}>🎮 Game Mode</button>
         <div style={{flex:1,textAlign:"center",fontSize:"1rem",fontWeight:800}}>🛠 Board Editor</div>
-        <div style={{width:60}}/>
+        <button onClick={()=>setDark(d=>!d)} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,border:`1px solid ${border}`,background:card,color:textMuted,fontSize:12,fontFamily:"inherit",cursor:"pointer"}}>{dark?"☀ Light":"☾ Dark"}</button>
       </div>
 
       <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:12,flexWrap:"wrap"}}>
@@ -662,15 +683,15 @@ function EditorScreen({ onBack, onPlay, onSave }) {
         <button onClick={()=>switchTool("red")}   style={toolBtn(tool==="red","#ef4444")}>★ Red car</button>
         <button onClick={()=>switchTool("place")} style={toolBtn(tool==="place")}>✏️ Place</button>
         <button onClick={()=>switchTool("erase")} style={toolBtn(tool==="erase")}>🗑 Erase</button>
-        <button onClick={clearBoard} style={{...btn,backgroundColor:"#1e1e32",color:"#f87171"}}>✕ Clear</button>
+        <button onClick={clearBoard} style={{...btn,backgroundColor:card,color:"#f87171"}}>✕ Clear</button>
       </div>
 
       {tool==="place" && (
-        <div style={{backgroundColor:"#1e1e32",borderRadius:10,padding:12,maxWidth:360,margin:"0 auto 12px"}}>
+        <div style={{backgroundColor:card,borderRadius:10,padding:12,maxWidth:360,margin:"0 auto 12px",border:`1px solid ${border}`}}>
           <div style={{display:"flex",gap:8,marginBottom:10,justifyContent:"center"}}>
             {[2,3].map(l=>(
               <button key={l} onClick={()=>setPieceLen(l)}
-                style={{...btn,backgroundColor:pieceLen===l?"#6366f1":"#252540",color:pieceLen===l?"#fff":"#a0a0b8",flex:1}}>
+                style={{...btn,backgroundColor:pieceLen===l?"#6366f1":cardAlt,color:pieceLen===l?"#fff":textDim,flex:1}}>
                 {l===2?"🚗 Car (2)":"🚛 Truck (3)"}
               </button>
             ))}
@@ -678,7 +699,7 @@ function EditorScreen({ onBack, onPlay, onSave }) {
           <div style={{display:"flex",gap:8,marginBottom:10,justifyContent:"center"}}>
             {[["H","→ Horizontal"],["V","↓ Vertical"]].map(([o,label])=>(
               <button key={o} onClick={()=>setPieceOrient(o)}
-                style={{...btn,backgroundColor:pieceOrient===o?"#6366f1":"#252540",color:pieceOrient===o?"#fff":"#a0a0b8",flex:1}}>
+                style={{...btn,backgroundColor:pieceOrient===o?"#6366f1":cardAlt,color:pieceOrient===o?"#fff":textDim,flex:1}}>
                 {label}
               </button>
             ))}
@@ -695,25 +716,25 @@ function EditorScreen({ onBack, onPlay, onSave }) {
       )}
 
       {tool==="red" && (
-        <div style={{backgroundColor:"#1e1e32",borderRadius:10,padding:12,maxWidth:360,margin:"0 auto 12px",textAlign:"center"}}>
-          <div style={{fontSize:"0.82rem",color:"#a0a0b8"}}>
+        <div style={{backgroundColor:card,borderRadius:10,padding:12,maxWidth:360,margin:"0 auto 12px",textAlign:"center",border:`1px solid ${border}`}}>
+          <div style={{fontSize:"0.82rem",color:textDim}}>
             Click anywhere on <span style={{color:"#ef4444",fontWeight:700}}>row 3</span> to move the red car's starting position.
           </div>
-          <div style={{fontSize:"0.72rem",color:"#6b6b80",marginTop:4}}>It stays horizontal, length 2, and must exit to the right.</div>
+          <div style={{fontSize:"0.72rem",color:textMuted,marginTop:4}}>It stays horizontal, length 2, and must exit to the right.</div>
         </div>
       )}
 
       <div style={{display:"flex",justifyContent:"center",marginBottom:8}}>
         <EditorBoard pieces={pieces} onCellClick={handleCellClick} previewPiece={previewPiece}
-          redMode={tool==="red"} activeColour={tool==="place"?pieceColour:null}/>
+          redMode={tool==="red"} activeColour={tool==="place"?pieceColour:null} T={T}/>
       </div>
 
-      <p style={{textAlign:"center",color:"#6b6b80",fontSize:"0.72rem",marginBottom:12}}>{hintText}</p>
+      <p style={{textAlign:"center",color:textMuted,fontSize:"0.72rem",marginBottom:12}}>{hintText}</p>
 
       <div style={{maxWidth:360,margin:"0 auto 10px",display:"flex",gap:8}}>
         <input value={saveName} onChange={e=>setSaveName(e.target.value)} placeholder="Puzzle name (optional)…"
-          style={{flex:1,padding:"8px 10px",borderRadius:7,border:"1px solid #3b3b52",
-            backgroundColor:"#1e1e32",color:"#e8e8f0",fontSize:"0.82rem",boxSizing:"border-box",outline:"none"}}/>
+          style={{flex:1,padding:"8px 10px",borderRadius:7,border:`1px solid ${border}`,
+            backgroundColor:card,color:text,fontSize:"0.82rem",boxSizing:"border-box",outline:"none"}}/>
       </div>
 
       <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:14}}>
@@ -722,22 +743,22 @@ function EditorScreen({ onBack, onPlay, onSave }) {
           style={{...btn,backgroundColor:"#d97706",color:"#fff"}}>
           {saveMsg||"💾 Save"}
         </button>
-        <button onClick={()=>setShowJson(s=>!s)} style={{...btn,backgroundColor:showJson?"#475569":"#1e1e32",color:"#a0a0b8"}}>
+        <button onClick={()=>setShowJson(s=>!s)} style={{...btn,backgroundColor:showJson?"#475569":card,color:textDim}}>
           {showJson?"Hide JSON":"{ } JSON"}
         </button>
       </div>
 
       {solution&&solution.length>0&&saveMsg===""&&(
-        <div style={{fontSize:"0.72rem",color:"#6b6b80",textAlign:"center",marginBottom:10}}>
+        <div style={{fontSize:"0.72rem",color:textMuted,textAlign:"center",marginBottom:10}}>
           Par will be set to {solution.length} on save
         </div>
       )}
 
       {showJson && (
-        <div style={{backgroundColor:"#1e1e32",borderRadius:10,padding:14,maxWidth:360,margin:"0 auto 14px"}}>
-          <div style={{fontSize:"0.75rem",fontWeight:700,color:"#6b6b80",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>Export</div>
+        <div style={{backgroundColor:card,borderRadius:10,padding:14,maxWidth:360,margin:"0 auto 14px",border:`1px solid ${border}`}}>
+          <div style={{fontSize:"0.75rem",fontWeight:700,color:textMuted,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>Export</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-            <div style={{fontSize:"0.78rem",color:"#a0a0b8"}}>Select all and copy:</div>
+            <div style={{fontSize:"0.78rem",color:textDim}}>Select all and copy:</div>
             <button onClick={()=>{
               const json=JSON.stringify(pieces,null,2);
               const blob=new Blob([json],{type:"application/json"});
@@ -755,13 +776,13 @@ function EditorScreen({ onBack, onPlay, onSave }) {
             </button>
           </div>
           <textarea readOnly value={jsonText} onClick={e=>e.target.select()}
-            style={{width:"100%",height:100,backgroundColor:"#12122a",color:"#a0a0b8",
-              border:"1px solid #3b3b52",borderRadius:7,padding:"8px 10px",
+            style={{width:"100%",height:100,backgroundColor:T?T.bg:"#12122a",color:textDim,
+              border:`1px solid ${border}`,borderRadius:7,padding:"8px 10px",
               fontSize:"0.68rem",fontFamily:"monospace",resize:"none",
               boxSizing:"border-box",outline:"none",marginBottom:14}}/>
 
-          <div style={{fontSize:"0.75rem",fontWeight:700,color:"#6b6b80",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>Import</div>
-          <JsonImporter onLoad={incoming=>{
+          <div style={{fontSize:"0.75rem",fontWeight:700,color:textMuted,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>Import</div>
+          <JsonImporter T={T} onLoad={incoming=>{
             setPieces(incoming);
             setSolution(null); setSolverStep(0); setShowJson(false);
           }}/>
@@ -770,7 +791,7 @@ function EditorScreen({ onBack, onPlay, onSave }) {
 
       {solverOpen && (
         <SolverPanel pieces={pieces} solution={solution} solving={solving}
-          solverStep={solverStep} setSolverStep={setSolverStep}/>
+          solverStep={solverStep} setSolverStep={setSolverStep} T={T}/>
       )}
     </div>
   );
@@ -778,21 +799,25 @@ function EditorScreen({ onBack, onPlay, onSave }) {
 
 // ─── Puzzle Picker ────────────────────────────────────────────────────────────
 
-function PuzzlePicker({ puzzles, records, onSelect, onOpenEditor }) {
+function PuzzlePicker({ puzzles, records, onSelect, onOpenEditor, dark, setDark, T }) {
   const [filter, setFilter] = useState("all");
   const diffs = ["all","easy","medium","hard","expert","custom"];
   const shown = filter==="all" ? puzzles : puzzles.filter(p=>p.difficulty===(filter==="custom"?"custom":filter));
   const hasCustom = puzzles.some(p=>p.custom);
 
   return (
-    <div style={{backgroundColor:"#0f0f1a",minHeight:"100vh",color:"#e8e8f0",fontFamily:"sans-serif",padding:16}}>
-      <h1 style={{fontSize:"1.3rem",fontWeight:800,textAlign:"center",marginBottom:2}}>🚗 Rush Hour</h1>
-      <p style={{color:"#6b6b80",fontSize:"0.75rem",textAlign:"center",marginBottom:14}}>Slide pieces out of the way. Get the red car to the exit.</p>
+    <div style={{ backgroundColor: T.bg, minHeight: "100vh", color: T.text, fontFamily: "sans-serif", padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, maxWidth: 600, margin: '0 auto 12px' }}>
+        <a href="../../" style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',textDecoration:'none' }}>⌂ Home</a>
+        <button onClick={() => setDark(d => !d)} style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',cursor:'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+      </div>
+      <h1 style={{ fontSize: "1.3rem", fontWeight: 800, textAlign: "center", marginBottom: 2, color: T.text }}>🚗 Rush Hour</h1>
+      <p style={{ color: T.textMuted, fontSize: "0.75rem", textAlign: "center", marginBottom: 14 }}>Slide pieces out of the way. Get the red car to the exit.</p>
 
-      <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
         <button onClick={onOpenEditor}
-          style={{border:"none",borderRadius:20,padding:"8px 20px",cursor:"pointer",fontWeight:600,fontSize:"0.82rem",
-            backgroundColor:"#1e1e32",color:"#a0a0b8",display:"flex",alignItems:"center",gap:6}}>
+          style={{ border: "none", borderRadius: 20, padding: "8px 20px", cursor: "pointer", fontWeight: 600, fontSize: "0.82rem",
+            backgroundColor: T.card, color: T.textDim, display: "flex", alignItems: "center", gap: 6 }}>
           🛠 Board Editor & Solver
         </button>
       </div>
@@ -801,8 +826,8 @@ function PuzzlePicker({ puzzles, records, onSelect, onOpenEditor }) {
         {diffs.filter(d=>d!=="custom"||hasCustom).map(d=>(
           <button key={d} onClick={()=>setFilter(d)}
             style={{border:"none",borderRadius:20,padding:"6px 14px",cursor:"pointer",fontWeight:600,fontSize:"0.78rem",
-              backgroundColor:filter===d?(d==="all"?"#6366f1":DIFF_COLOUR[d]||"#6366f1"):"#1e1e32",
-              color:filter===d?"#fff":"#a0a0b8"}}>
+              backgroundColor:filter===d?(d==="all"?"#6366f1":DIFF_COLOUR[d]||"#6366f1"):T.card,
+              color:filter===d?"#fff":T.textMuted}}>
             {d==="all"?"All":DIFF_LABEL[d]||d}
           </button>
         ))}
@@ -811,8 +836,8 @@ function PuzzlePicker({ puzzles, records, onSelect, onOpenEditor }) {
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,maxWidth:600,margin:"0 auto"}}>
         {shown.map(p=>(
           <button key={p.id} onClick={()=>onSelect(p)}
-            style={{backgroundColor:"#1e1e32",
-              border:`2px solid ${records[p.id]?DIFF_COLOUR[p.difficulty]||"#6366f1":"rgba(255,255,255,0.06)"}`,
+            style={{backgroundColor:T.card,
+              border:`2px solid ${records[p.id]?DIFF_COLOUR[p.difficulty]||"#6366f1":T.border}`,
               borderRadius:10,padding:"14px 10px",cursor:"pointer",textAlign:"left"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
               <span style={{fontSize:"0.65rem",fontWeight:700,
@@ -823,10 +848,10 @@ function PuzzlePicker({ puzzles, records, onSelect, onOpenEditor }) {
               </span>
               {records[p.id]&&<span>✅</span>}
             </div>
-            <div style={{fontSize:"0.9rem",fontWeight:700,color:"#e8e8f0",marginBottom:2}}>
+            <div style={{fontSize:"0.9rem",fontWeight:700,color:T.text,marginBottom:2}}>
               {p.custom?"★ ":""}{p.name}
             </div>
-            <div style={{fontSize:"0.72rem",color:"#6b6b80"}}>
+            <div style={{fontSize:"0.72rem",color:T.textMuted}}>
               {p.par!=null?`Par ${p.par}`:"No par set"}
             </div>
             {records[p.id]&&<div style={{fontSize:"0.7rem",color:"#4ade80",marginTop:4}}>Best: {records[p.id].moves} moves</div>}
@@ -852,6 +877,20 @@ function getRating(moves,par){
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 export default function RushHourApp() {
+  const [dark, setDark]              = useState(true);
+
+  const T = {
+    bg:        dark ? '#0f0f1a'                : '#f4f4fc',
+    card:      dark ? '#1e1e32'                : '#ffffff',
+    cardAlt:   dark ? '#13132a'                : '#f0f0fa',
+    border:    dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.09)',
+    boardBg:   dark ? '#090914'                : '#e8e8f8',
+    text:      dark ? '#e8e8f0'                : '#1a1a2e',
+    textMuted: dark ? '#6b6b80'                : '#6868a0',
+    textDim:   dark ? '#a0a0b8'                : '#4a4a6a',
+    accent:    '#6366f1',
+  };
+
   const [screen, setScreen]         = useState("editor");
   const [puzzles, setPuzzles]       = useState(BUILT_IN_PUZZLES);
   const [puzzle, setPuzzle]         = useState(null);
@@ -986,17 +1025,19 @@ export default function RushHourApp() {
   const btn={border:"none",borderRadius:8,padding:"8px 14px",cursor:"pointer",fontWeight:600,fontSize:"0.82rem"};
 
   if(screen==="picker") return (
-    <PuzzlePicker puzzles={puzzles} records={records} onSelect={startPuzzle} onOpenEditor={()=>setScreen("editor")}/>
+    <PuzzlePicker puzzles={puzzles} records={records} onSelect={startPuzzle} onOpenEditor={()=>setScreen("editor")}
+      dark={dark} setDark={setDark} T={T}/>
   );
 
   if(screen==="editor") return (
-    <EditorScreen onBack={()=>setScreen("picker")} onPlay={playFromEditor} onSave={saveCustomPuzzle}/>
+    <EditorScreen onBack={()=>setScreen("picker")} onPlay={playFromEditor} onSave={saveCustomPuzzle}
+      dark={dark} setDark={setDark} T={T}/>
   );
 
   return (
-    <div style={{backgroundColor:"#0f0f1a",minHeight:"100vh",color:"#e8e8f0",fontFamily:"sans-serif",padding:16,boxSizing:"border-box"}}>
+    <div style={{backgroundColor:T.bg,minHeight:"100vh",color:T.text,fontFamily:"sans-serif",padding:16,boxSizing:"border-box"}}>
       <div style={{display:"flex",alignItems:"center",marginBottom:10}}>
-        <button onClick={()=>setScreen("picker")} style={{...btn,backgroundColor:"#1e1e32",color:"#a0a0b8",padding:"6px 12px",marginRight:10}}>← Back</button>
+        <button onClick={()=>setScreen("picker")} style={{...btn,backgroundColor:T.card,color:T.textMuted,padding:"6px 12px",marginRight:10}}>← Back</button>
         <div style={{flex:1,textAlign:"center"}}>
           <span style={{fontSize:"0.65rem",fontWeight:700,
             color:DIFF_COLOUR[puzzle.difficulty]||"#6366f1",
@@ -1006,21 +1047,21 @@ export default function RushHourApp() {
           </span>
           <span style={{fontSize:"1rem",fontWeight:800}}>{puzzle.custom?"★ ":""}{puzzle.name}</span>
         </div>
-        <div style={{width:60}}/>
+        <button onClick={()=>setDark(d=>!d)} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,border:`1px solid ${T.border}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:"inherit",cursor:"pointer"}}>{dark?"☀ Light":"☾ Dark"}</button>
       </div>
 
-      <div style={{display:"flex",justifyContent:"center",gap:20,backgroundColor:"#1e1e32",borderRadius:10,padding:"10px 20px",maxWidth:340,margin:"0 auto 14px"}}>
+      <div style={{display:"flex",justifyContent:"center",gap:20,backgroundColor:T.card,borderRadius:10,padding:"10px 20px",maxWidth:340,margin:"0 auto 14px",border:`1px solid ${T.border}`}}>
         {[["Moves",moveCount],["Par",puzzle.par??"-"],["Time",formatTime(elapsed)]].map(([label,val])=>(
           <div key={label} style={{textAlign:"center"}}>
             <div style={{fontSize:"1.05rem",fontWeight:700}}>{val}</div>
-            <div style={{fontSize:"0.62rem",color:"#6b6b80",textTransform:"uppercase",letterSpacing:"0.05em"}}>{label}</div>
+            <div style={{fontSize:"0.62rem",color:T.textMuted,textTransform:"uppercase",letterSpacing:"0.05em"}}>{label}</div>
           </div>
         ))}
       </div>
 
       <div style={{display:"flex",justifyContent:"center",marginBottom:12}}>
         <Board pieces={pieces} selectedId={selectedId} onSelectPiece={setSelectedId}
-          onDragPreview={handleDragPreview} onDragCommit={handleDragCommit} solved={solved}/>
+          onDragPreview={handleDragPreview} onDragCommit={handleDragCommit} solved={solved} T={T}/>
       </div>
 
       {showHint&&hint&&(
@@ -1034,30 +1075,30 @@ export default function RushHourApp() {
       )}
 
       <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap",marginBottom:14}}>
-        <button onClick={undo} disabled={!history.length} style={{...btn,backgroundColor:"#1e1e32",color:!history.length?"#3b3b52":"#a0a0b8",cursor:!history.length?"not-allowed":"pointer"}}>↩ Undo</button>
-        <button onClick={getHint} disabled={solved} style={{...btn,backgroundColor:"#1e1e32",color:solved?"#3b3b52":"#a0a0b8",cursor:solved?"not-allowed":"pointer"}}>💡 Hint</button>
-        <button onClick={runSolver} disabled={solving} style={{...btn,backgroundColor:solverOpen?"#6366f1":"#1e1e32",color:solving?"#3b3b52":solverOpen?"#fff":"#a0a0b8",cursor:solving?"not-allowed":"pointer"}}>
+        <button onClick={undo} disabled={!history.length} style={{...btn,backgroundColor:T.card,color:!history.length?"#3b3b52":T.textDim,cursor:!history.length?"not-allowed":"pointer"}}>↩ Undo</button>
+        <button onClick={getHint} disabled={solved} style={{...btn,backgroundColor:T.card,color:solved?"#3b3b52":T.textDim,cursor:solved?"not-allowed":"pointer"}}>💡 Hint</button>
+        <button onClick={runSolver} disabled={solving} style={{...btn,backgroundColor:solverOpen?"#6366f1":T.card,color:solving?"#3b3b52":solverOpen?"#fff":T.textDim,cursor:solving?"not-allowed":"pointer"}}>
           {solving?"Solving…":"🔍 Solve"}
         </button>
-        <button onClick={()=>startPuzzle(puzzle)} style={{...btn,backgroundColor:"#1e1e32",color:"#a0a0b8"}}>↺ Restart</button>
+        <button onClick={()=>startPuzzle(puzzle)} style={{...btn,backgroundColor:T.card,color:T.textDim}}>↺ Restart</button>
       </div>
 
       {solverOpen&&(
         <SolverPanel pieces={pieces} solution={solution} solving={solving}
-          solverStep={solverStep} setSolverStep={setSolverStep}/>
+          solverStep={solverStep} setSolverStep={setSolverStep} T={T}/>
       )}
 
       {solved&&rating&&(
-        <div style={{backgroundColor:"#1e1e32",borderRadius:12,border:`2px solid ${rating.colour}`,padding:"20px 24px",textAlign:"center",maxWidth:320,margin:"0 auto"}}>
+        <div style={{backgroundColor:T.card,borderRadius:12,border:`2px solid ${rating.colour}`,padding:"20px 24px",textAlign:"center",maxWidth:320,margin:"0 auto"}}>
           <div style={{fontSize:"1.4rem",fontWeight:800,color:rating.colour,marginBottom:6}}>{rating.label}</div>
-          <div style={{fontSize:"0.85rem",color:"#a0a0b8",marginBottom:4}}>
+          <div style={{fontSize:"0.85rem",color:T.textDim,marginBottom:4}}>
             {moveCount} moves{puzzle.par!=null?` · Par ${puzzle.par}`:""} · {formatTime(elapsed)}
           </div>
-          <div style={{fontSize:"0.78rem",color:"#6b6b80",marginBottom:16}}>
+          <div style={{fontSize:"0.78rem",color:T.textMuted,marginBottom:16}}>
             {puzzle.par!=null?(moveCount===puzzle.par?"Optimal solve! 🏆":`${moveCount-puzzle.par} over par`):""}
           </div>
           <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-            <button onClick={()=>setScreen("picker")} style={{...btn,backgroundColor:"#252540",color:"#a0a0b8"}}>All Puzzles</button>
+            <button onClick={()=>setScreen("picker")} style={{...btn,backgroundColor:T.cardAlt,color:T.textDim}}>All Puzzles</button>
             {!puzzle.custom&&(
               <button onClick={()=>{ const nx=puzzles.find(p=>!p.custom&&p.id===puzzle.id+1); nx?startPuzzle(nx):setScreen("picker"); }}
                 style={{...btn,backgroundColor:"#6366f1",color:"#fff"}}>Next →</button>

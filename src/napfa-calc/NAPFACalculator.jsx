@@ -129,7 +129,7 @@ function stationShort(key) {
 // Higher-is-better: left = fail zone, right = A zone
 // Lower-is-better:  left = A zone, right = fail zone
 
-function SegmentedBar({ thresholds, userValue, lowerBetter, formatTick }) {
+function SegmentedBar({ thresholds, userValue, lowerBetter, formatTick, dark }) {
   const W = 400;
   const BAR_H  = 32;
   const TICK_H = 14;
@@ -180,6 +180,8 @@ function SegmentedBar({ thresholds, userValue, lowerBetter, formatTick }) {
   const markerX = hasUser ? clampX(toX(userValue)) : null;
   const markerY = MARKER_ABOVE; // top of bar
 
+  const barTrackBg = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
   return (
     <div style={{ width:"100%" }}>
       <svg
@@ -188,6 +190,9 @@ function SegmentedBar({ thresholds, userValue, lowerBetter, formatTick }) {
         style={{ display:"block", overflow:"visible" }}
         preserveAspectRatio="xMidYMid meet"
       >
+        {/* ── Bar track background ── */}
+        <rect x={0} y={MARKER_ABOVE} width={W} height={BAR_H} fill={barTrackBg} />
+
         {/* ── Grade band segments ── */}
         {segments.map(seg => {
           const x1 = toX(seg.left);
@@ -276,7 +281,7 @@ function SegmentedBar({ thresholds, userValue, lowerBetter, formatTick }) {
 
 // ─── THRESHOLD TABLE ──────────────────────────────────────────────────────────
 
-function ThresholdTable({ stationKey, thresholds, lowerBetter, formatTick }) {
+function ThresholdTable({ stationKey, thresholds, lowerBetter, formatTick, T }) {
   // A grade: display the original PDF boundary (stored threshold is one step stricter)
   // Higher-is-better: stored A = PDF_value + 1, so display = stored - 1
   // Lower-is-better shuttle: stored A = PDF_value - 0.1, so display = stored + 0.1
@@ -305,21 +310,21 @@ function ThresholdTable({ stationKey, thresholds, lowerBetter, formatTick }) {
     <div style={{ overflowX:"auto" }}>
       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
         <thead>
-          <tr style={{ borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
+          <tr style={{ borderBottom:`1px solid ${T.divider}` }}>
             {["Grade","Band","Pts","Min. Threshold"].map(h => (
-              <th key={h} style={{ textAlign:"left", padding:"4px 8px", color:"#6b6b80", fontWeight:500 }}>{h}</th>
+              <th key={h} style={{ textAlign:"left", padding:"4px 8px", color: T.textMuted, fontWeight:500 }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.grade} style={{ borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+            <tr key={r.grade} style={{ borderBottom:`1px solid ${T.divider}` }}>
               <td style={{ padding:"5px 8px" }}>
                 <span style={{ color:GRADE_COLORS[r.grade], fontWeight:700, fontSize:13 }}>{r.grade}</span>
               </td>
-              <td style={{ padding:"5px 8px", color:"#a0a0b8" }}>{r.band}</td>
-              <td style={{ padding:"5px 8px", color:"#a0a0b8", fontFamily:"monospace" }}>{r.pts}</td>
-              <td style={{ padding:"5px 8px", color:"#e8e8f0", fontFamily:"monospace" }}>{r.op} {formatTick(r.val)}</td>
+              <td style={{ padding:"5px 8px", color: T.textDim }}>{r.band}</td>
+              <td style={{ padding:"5px 8px", color: T.textDim, fontFamily:"monospace" }}>{r.pts}</td>
+              <td style={{ padding:"5px 8px", color: T.text, fontFamily:"monospace" }}>{r.op} {formatTick(r.val)}</td>
             </tr>
           ))}
         </tbody>
@@ -331,6 +336,25 @@ function ThresholdTable({ stationKey, thresholds, lowerBetter, formatTick }) {
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
 export default function NAPFACalculator() {
+  const [dark, setDark] = useState(true);
+
+  const T = {
+    bg:        dark ? '#0f0f1a'                    : '#f4f4fc',
+    headerBg:  dark ? '#13132a'                    : '#eeeef8',
+    card:      dark ? '#1e1e32'                    : '#ffffff',
+    border:    dark ? 'rgba(255,255,255,0.07)'     : 'rgba(0,0,0,0.09)',
+    border2:   dark ? 'rgba(255,255,255,0.1)'      : 'rgba(0,0,0,0.12)',
+    text:      dark ? '#e8e8f0'                    : '#1a1a2e',
+    textMuted: dark ? '#6b6b80'                    : '#6868a0',
+    textDim:   dark ? '#a0a0b8'                    : '#4a4a6a',
+    accent:    '#6366f1',
+    accentSoft:dark ? 'rgba(99,102,241,0.1)'       : 'rgba(99,102,241,0.08)',
+    accentText:dark ? '#a0a0b8'                    : '#6366f1',
+    inputBg:   dark ? 'rgba(255,255,255,0.05)'     : '#fafafe',
+    inputBorder: dark ? 'rgba(255,255,255,0.1)'    : 'rgba(0,0,0,0.12)',
+    divider:   dark ? 'rgba(255,255,255,0.06)'     : 'rgba(0,0,0,0.07)',
+  };
+
   const [age, setAge]               = useState("9");
   const [gender, setGender]         = useState("male");
   const [schoolLevel, setSchoolLevel] = useState("primary");
@@ -396,31 +420,35 @@ export default function NAPFACalculator() {
 
   // ── Shared styles ──
   const inp = {
-    width:"100%", background:"#252540",
-    border:"1px solid rgba(255,255,255,0.1)", borderRadius:6,
-    padding:"9px 10px", color:"#e8e8f0", fontSize:14,
+    width:"100%", background: T.inputBg,
+    border: `1px solid ${T.inputBorder}`, borderRadius:6,
+    padding:"9px 10px", color: T.text, fontSize:14,
     outline:"none", boxSizing:"border-box",
   };
-  const lbl  = { display:"block", color:"#6b6b80", fontSize:11, marginBottom:4 };
-  const card = { background:"#1e1e32", borderRadius:10, padding:16, border:"1px solid rgba(255,255,255,0.07)" };
-  const secH = { margin:"0 0 14px", fontSize:11, color:"#6b6b80", textTransform:"uppercase", letterSpacing:"0.6px", fontWeight:600 };
+  const lbl  = { display:"block", color: T.textMuted, fontSize:11, marginBottom:4 };
+  const card = { background: T.card, borderRadius:10, padding:16, border: `1px solid ${T.border}` };
+  const secH = { margin:"0 0 14px", fontSize:11, color: T.textMuted, textTransform:"uppercase", letterSpacing:"0.6px", fontWeight:600 };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#0f0f1a", color:"#e8e8f0", fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:60 }}>
+    <div style={{ minHeight:"100vh", background: T.bg, color: T.text, fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:60 }}>
 
       {/* Header */}
-      <div style={{ background:"#13132a", borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"20px 16px 16px" }}>
-        <div style={{ maxWidth:680, margin:"0 auto" }}>
-          <h1 style={{ margin:0, fontSize:22, fontWeight:700, letterSpacing:"-0.3px" }}>NAPFA Calculator</h1>
-          <p style={{ margin:"4px 0 0", fontSize:13, color:"#6b6b80" }}>National Physical Fitness Award · Singapore</p>
+      <div style={{ background: T.headerBg, borderBottom: `1px solid ${T.border}`, padding: "16px 16px" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 10 }}>
+            <a href="../../" style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border2}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',textDecoration:'none' }}>⌂ Home</a>
+            <button onClick={() => setDark(d => !d)} style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',borderRadius:8,border:`1px solid ${T.border2}`,background:T.card,color:T.textMuted,fontSize:12,fontFamily:'inherit',cursor:'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+          </div>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: T.text }}>NAPFA Calculator</h1>
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: T.textMuted }}>National Physical Fitness Award · Singapore</p>
         </div>
       </div>
 
       <div style={{ maxWidth:680, margin:"0 auto", padding:"20px 16px" }}>
 
         {effectiveLevel !== schoolLevel && (
-          <div style={{ background:"rgba(99,102,241,0.1)", border:"1px solid rgba(99,102,241,0.3)", borderRadius:8, padding:"8px 14px", marginBottom:16, fontSize:12, color:"#a0a0b8" }}>
-            ℹ️ Using <strong style={{ color:"#e8e8f0" }}>{effectiveLevel}</strong> standards for age {age}.
+          <div style={{ background: T.accentSoft, border:"1px solid rgba(99,102,241,0.3)", borderRadius:8, padding:"8px 14px", marginBottom:16, fontSize:12, color: T.accentText }}>
+            ℹ️ Using <strong style={{ color: T.text }}>{effectiveLevel}</strong> standards for age {age}.
           </div>
         )}
 
@@ -454,7 +482,7 @@ export default function NAPFACalculator() {
             </div>
           </div>
 
-          <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginBottom:16 }} />
+          <div style={{ borderTop:`1px solid ${T.divider}`, marginBottom:16 }} />
 
           {/* Station inputs 2-column grid */}
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
@@ -494,11 +522,11 @@ export default function NAPFACalculator() {
               <div style={{ display:"flex", gap:6, alignItems:"center" }}>
                 <input type="text" inputMode="numeric" placeholder="min" value={vals.run.min}
                   onChange={e => { const v=e.target.value; if(v===""||/^\d*$/.test(v)) setVal("run",{...vals.run,min:v}); }}
-                  style={{ ...inp, textAlign:"center" }} />
-                <span style={{ color:"#6b6b80", fontWeight:700, fontSize:18, flexShrink:0 }}>:</span>
+                  style={{ ...inp, textAlign:"center", background:"transparent", color: T.text }} />
+                <span style={{ color: T.textMuted, fontWeight:700, fontSize:18, flexShrink:0 }}>:</span>
                 <input type="text" inputMode="numeric" placeholder="sec" value={vals.run.sec}
                   onChange={e => { const v=e.target.value; if(v===""||/^\d*$/.test(v)) setVal("run",{...vals.run,sec:v}); }}
-                  style={{ ...inp, textAlign:"center" }} />
+                  style={{ ...inp, textAlign:"center", background:"transparent", color: T.text }} />
               </div>
             </div>
 
@@ -513,13 +541,13 @@ export default function NAPFACalculator() {
             {allFilled && award && (
               <div style={{ background:AWARD_BG[award], border:`1px solid ${AWARD_COLORS[award]}50`, borderRadius:8, padding:"14px 16px", marginBottom:16, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                 <div>
-                  <p style={{ margin:0, fontSize:11, color:"#a0a0b8", textTransform:"uppercase", letterSpacing:"0.5px" }}>Overall Award</p>
+                  <p style={{ margin:0, fontSize:11, color: T.textDim, textTransform:"uppercase", letterSpacing:"0.5px" }}>Overall Award</p>
                   <p style={{ margin:"4px 0 0", fontSize:28, fontWeight:800, color:AWARD_COLORS[award], letterSpacing:"-0.5px" }}>{award}</p>
                 </div>
                 <div style={{ textAlign:"right" }}>
-                  <p style={{ margin:0, fontSize:11, color:"#6b6b80" }}>Total Points</p>
-                  <p style={{ margin:"2px 0 0", fontSize:30, fontWeight:700, fontFamily:"monospace" }}>
-                    {totalPoints}<span style={{ fontSize:14, color:"#6b6b80" }}> / 30</span>
+                  <p style={{ margin:0, fontSize:11, color: T.textMuted }}>Total Points</p>
+                  <p style={{ margin:"2px 0 0", fontSize:30, fontWeight:700, fontFamily:"monospace", color: T.text }}>
+                    {totalPoints}<span style={{ fontSize:14, color: T.textMuted }}> / 30</span>
                   </p>
                 </div>
               </div>
@@ -538,30 +566,30 @@ export default function NAPFACalculator() {
                 const g = grades[key];
                 const isNI = g?.letter === "NI";
                 return (
-                  <div key={key} style={{ background:"#252540", borderRadius:8, padding:"10px 8px", textAlign:"center", border: isNI ? "1px solid rgba(239,68,68,0.4)" : "1px solid transparent" }}>
-                    <p style={{ margin:0, fontSize:10, color:"#6b6b80" }}>{stationShort(key)}</p>
-                    <p style={{ margin:"4px 0 0", fontSize:22, fontWeight:700, lineHeight:1, color: g ? GRADE_COLORS[g.letter] : "#2d2d50" }}>
+                  <div key={key} style={{ background: T.inputBg, borderRadius:8, padding:"10px 8px", textAlign:"center", border: isNI ? "1px solid rgba(239,68,68,0.4)" : `1px solid ${T.border}` }}>
+                    <p style={{ margin:0, fontSize:10, color: T.textMuted }}>{stationShort(key)}</p>
+                    <p style={{ margin:"4px 0 0", fontSize:22, fontWeight:700, lineHeight:1, color: g ? GRADE_COLORS[g.letter] : T.divider }}>
                       {g ? g.letter : "—"}
                     </p>
                     {isNI
                       ? <p style={{ margin:"2px 0 0", fontSize:9, color:"#ef4444" }}>Needs Improvement</p>
-                      : <p style={{ margin:"2px 0 0", fontSize:10, color:"#6b6b80" }}>{g ? `${g.points} pt` : ""}</p>
+                      : <p style={{ margin:"2px 0 0", fontSize:10, color: T.textMuted }}>{g ? `${g.points} pt` : ""}</p>
                     }
                   </div>
                 );
               })}
             </div>
 
-            <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:14, paddingTop:12 }}>
+            <div style={{ borderTop:`1px solid ${T.divider}`, marginTop:14, paddingTop:12 }}>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6, marginBottom:8 }}>
                 {[{a:"Gold",r:"C+ in all · ≥21 pts"},{a:"Silver",r:"D+ in all · ≥15 pts"},{a:"Bronze",r:"E+ in all · ≥6 pts"}].map(x=>(
                   <div key={x.a} style={{ textAlign:"center" }}>
                     <p style={{ margin:0, fontSize:12, fontWeight:700, color:AWARD_COLORS[x.a] }}>{x.a}</p>
-                    <p style={{ margin:"2px 0 0", fontSize:10, color:"#6b6b80" }}>{x.r}</p>
+                    <p style={{ margin:"2px 0 0", fontSize:10, color: T.textMuted }}>{x.r}</p>
                   </div>
                 ))}
               </div>
-              <p style={{ margin:0, fontSize:10, color:"#6b6b80", textAlign:"center" }}>
+              <p style={{ margin:0, fontSize:10, color: T.textMuted, textAlign:"center" }}>
                 Any station graded <span style={{ color:"#ef4444", fontWeight:600 }}>NI</span> (below Grade E) = automatic <span style={{ color:"#ef4444", fontWeight:600 }}>Fail</span>
               </p>
             </div>
@@ -584,7 +612,7 @@ export default function NAPFACalculator() {
                 return (
                   <div key={key}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                      <p style={{ margin:0, fontSize:13, fontWeight:600, color:"#e8e8f0" }}>
+                      <p style={{ margin:0, fontSize:13, fontWeight:600, color: T.text }}>
                         {stationLabel(key, age, gender)}
                       </p>
                       {g && (
@@ -599,14 +627,15 @@ export default function NAPFACalculator() {
                       userValue={nv}
                       lowerBetter={lb}
                       formatTick={fmt}
+                      dark={dark}
                     />
 
                     <div style={{ marginTop:12 }}>
-                      <ThresholdTable stationKey={key} thresholds={standards[key]} lowerBetter={lb} formatTick={fmt} />
+                      <ThresholdTable stationKey={key} thresholds={standards[key]} lowerBetter={lb} formatTick={fmt} T={T} />
                     </div>
 
                     {i < STATION_KEYS.length - 1 && (
-                      <div style={{ borderTop:"1px solid rgba(255,255,255,0.05)", marginTop:24 }} />
+                      <div style={{ borderTop:`1px solid ${T.divider}`, marginTop:24 }} />
                     )}
                   </div>
                 );
@@ -615,7 +644,7 @@ export default function NAPFACalculator() {
           </div>
         )}
 
-        <p style={{ marginTop:20, textAlign:"center", fontSize:11, color:"#3d3d60" }}>
+        <p style={{ marginTop:20, textAlign:"center", fontSize:11, color: T.textMuted }}>
           Based on MOE NAPFA standards · Data sourced from official school fitness assessment tables
         </p>
       </div>

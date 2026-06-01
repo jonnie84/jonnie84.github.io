@@ -284,38 +284,15 @@ const TIPS = {
 };
 
 /* ═══════════════════════════════════════════
-   DESIGN TOKENS
+   DESIGN TOKENS  (built inside component – kept here as type reference only)
    ═══════════════════════════════════════════ */
-const T = {
-  bg: "#0f0f1a",
-  surface: "#1a1a2e",
-  surfaceRaised: "#222240",
-  border: "rgba(255,255,255,0.07)",
-  borderActive: "rgba(99,132,255,0.35)",
-  text: "#e0e0ee",
-  textSec: "#9898b0",
-  textMuted: "#5e5e78",
-  accent: "#6366f1",
-  accentSoft: "rgba(99,102,241,0.12)",
-  green: "#34d399",
-  greenSoft: "rgba(52,211,153,0.1)",
-  red: "#f87171",
-  redSoft: "rgba(248,113,113,0.1)",
-  yellow: "#fbbf24",
-  yellowSoft: "rgba(251,191,36,0.08)",
-  blue: "#60a5fa",
-  blueSoft: "rgba(96,165,250,0.1)",
-  radius: "8px",
-  mono: "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace",
-  sans: "'DM Sans', 'Segoe UI', system-ui, sans-serif",
-};
 
 /* ═══════════════════════════════════════════
    REUSABLE COMPONENTS
    ═══════════════════════════════════════════ */
 
 // Number input: stores value as string, parses on blur (per ui-design skill)
-function NumInput({ value, onChange, min, max, style, placeholder, ariaLabel }) {
+function NumInput({ value, onChange, min, max, style, placeholder, ariaLabel, T }) {
   const [raw, setRaw] = useState(String(value));
   const [focused, setFocused] = useState(false);
 
@@ -363,7 +340,7 @@ function NumInput({ value, onChange, min, max, style, placeholder, ariaLabel }) 
   );
 }
 
-function MetricCard({ label, value, color, sub, mob }) {
+function MetricCard({ label, value, color, sub, mob, T }) {
   const [tip, setTip] = useState(false);
   return (
     <div
@@ -395,7 +372,7 @@ function MetricCard({ label, value, color, sub, mob }) {
   );
 }
 
-function TabButton({ active, onClick, children, mob }) {
+function TabButton({ active, onClick, children, mob, T }) {
   return (
     <button
       onClick={onClick}
@@ -415,7 +392,7 @@ function TabButton({ active, onClick, children, mob }) {
   );
 }
 
-function StrategyButton({ active, onClick, label, desc, isBench, mob }) {
+function StrategyButton({ active, onClick, label, desc, isBench, mob, T }) {
   return (
     <button
       onClick={onClick}
@@ -464,6 +441,31 @@ export default function BacktestApp() {
   const [nextId, setNextId] = useState(100);
   const [showMeth, setShowMeth] = useState(false);
   const [dateRange, setDateRange] = useState([0, 0]);
+  const [dark, setDark] = useState(true);
+
+  const T = {
+    bg:           dark ? '#0f0f1a'                    : '#f4f4fc',
+    surface:      dark ? '#1a1a2e'                    : '#ffffff',
+    surfaceRaised:dark ? '#222240'                    : '#f0f0fa',
+    border:       dark ? 'rgba(255,255,255,0.07)'     : 'rgba(0,0,0,0.09)',
+    borderActive: dark ? 'rgba(99,132,255,0.35)'      : 'rgba(99,102,241,0.40)',
+    text:         dark ? '#e0e0ee'                    : '#1a1a2e',
+    textSec:      dark ? '#9898b0'                    : '#4a4a6a',
+    textMuted:    dark ? '#5e5e78'                    : '#6868a0',
+    accent:       '#6366f1',
+    accentSoft:   dark ? 'rgba(99,102,241,0.12)'      : 'rgba(99,102,241,0.10)',
+    green:        dark ? '#34d399'                    : '#059669',
+    greenSoft:    dark ? 'rgba(52,211,153,0.1)'       : 'rgba(5,150,105,0.08)',
+    red:          dark ? '#f87171'                    : '#dc2626',
+    redSoft:      dark ? 'rgba(248,113,113,0.1)'      : 'rgba(220,38,38,0.08)',
+    yellow:       dark ? '#fbbf24'                    : '#d97706',
+    yellowSoft:   dark ? 'rgba(251,191,36,0.08)'      : 'rgba(217,119,6,0.08)',
+    blue:         dark ? '#60a5fa'                    : '#2563eb',
+    blueSoft:     dark ? 'rgba(96,165,250,0.1)'       : 'rgba(37,99,235,0.08)',
+    radius:       '8px',
+    mono:         "'JetBrains Mono', 'SF Mono', 'Fira Code', monospace",
+    sans:         "'DM Sans', 'Segoe UI', system-ui, sans-serif",
+  };
 
   const sType = STRATEGIES[stratKey]?.type || "";
   const showTierEditor = sType === "tiered" || sType === "hybrid";
@@ -558,6 +560,10 @@ export default function BacktestApp() {
 
       {/* ── HEADER ── */}
       <header style={{ marginBottom: mob ? "20px" : "36px", paddingBottom: "20px", borderBottom: `1px solid ${T.border}` }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 12 }}>
+          <a href="../../" style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:8,border:`1px solid ${T.border}`,background:T.surface,color:T.textSec,fontSize:13,fontFamily:T.sans,textDecoration:'none' }}>⌂ Home</a>
+          <button onClick={() => setDark(d => !d)} style={{ display:'inline-flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:8,border:`1px solid ${T.border}`,background:T.surface,color:T.textSec,fontSize:13,fontFamily:T.sans,cursor:'pointer' }}>{dark ? '☀ Light' : '☾ Dark'}</button>
+        </div>
         <h1 style={{ fontSize: mob ? "1.25rem" : "1.75rem", fontWeight: 800, margin: 0, color: T.text }}>Drawdown Strategy Backtester</h1>
         <p style={{ fontSize: mob ? "0.75rem" : "0.8125rem", color: T.textMuted, margin: "6px 0 0" }}>Test capital deployment strategies with monthly injections</p>
       </header>
@@ -665,11 +671,11 @@ export default function BacktestApp() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
             <div>
               <label style={{ fontSize: "0.6875rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 500 }}>Starting Capital ($)</label>
-              <NumInput value={startCap} onChange={v => setStartCap(Math.round(v))} min={0} ariaLabel="Starting capital" />
+              <NumInput value={startCap} onChange={v => setStartCap(Math.round(v))} min={0} ariaLabel="Starting capital" T={T} />
             </div>
             <div>
               <label style={{ fontSize: "0.6875rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 500 }}>Monthly Injection ($)</label>
-              <NumInput value={monthlyInj} onChange={v => setMonthlyInj(Math.round(v))} min={0} ariaLabel="Monthly injection" />
+              <NumInput value={monthlyInj} onChange={v => setMonthlyInj(Math.round(v))} min={0} ariaLabel="Monthly injection" T={T} />
             </div>
           </div>
 
@@ -717,6 +723,7 @@ export default function BacktestApp() {
                 min={0}
                 style={{ padding: "8px 12px", fontSize: "0.8125rem" }}
                 ariaLabel="Exit rule value"
+                T={T}
               />
             </div>
           )}
@@ -730,7 +737,7 @@ export default function BacktestApp() {
           {Object.keys(STRATEGIES).map(key => (
             <StrategyButton key={key} active={stratKey === key} onClick={() => pickStrategy(key)}
               label={STRATEGIES[key].label} desc={STRATEGIES[key].desc}
-              isBench={STRATEGIES[key].type === "regularDca"} mob={mob} />
+              isBench={STRATEGIES[key].type === "regularDca"} mob={mob} T={T} />
           ))}
         </div>
 
@@ -745,7 +752,7 @@ export default function BacktestApp() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", background: "rgba(0,0,0,0.2)", borderRadius: T.radius, padding: "14px 16px", marginBottom: "8px" }}>
               <div>
                 <label style={{ fontSize: "0.625rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 600, textTransform: "uppercase" }}>Invest Immediately (%)</label>
-                <NumInput value={hybCfg.immPct} onChange={v => setHybCfg({ immPct: v })} min={0} max={100} style={{ color: T.green }} ariaLabel="Immediate investment percentage" />
+                <NumInput value={hybCfg.immPct} onChange={v => setHybCfg({ immPct: v })} min={0} max={100} style={{ color: T.green }} ariaLabel="Immediate investment percentage" T={T} />
               </div>
               <div>
                 <label style={{ fontSize: "0.625rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 600, textTransform: "uppercase" }}>War Chest (%)</label>
@@ -760,11 +767,11 @@ export default function BacktestApp() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", background: "rgba(0,0,0,0.2)", borderRadius: T.radius, padding: "14px 16px" }}>
             <div>
               <label style={{ fontSize: "0.625rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 600, textTransform: "uppercase" }}>Trigger Drop %</label>
-              <NumInput value={dcaCfg.trigDrop} onChange={v => setDcaCfg({ ...dcaCfg, trigDrop: v })} min={1} max={90} style={{ color: T.red }} ariaLabel="Trigger drop percentage" />
+              <NumInput value={dcaCfg.trigDrop} onChange={v => setDcaCfg({ ...dcaCfg, trigDrop: v })} min={1} max={90} style={{ color: T.red }} ariaLabel="Trigger drop percentage" T={T} />
             </div>
             <div>
               <label style={{ fontSize: "0.625rem", color: T.textMuted, display: "block", marginBottom: "4px", fontWeight: 600, textTransform: "uppercase" }}>Spread Over (months)</label>
-              <NumInput value={dcaCfg.months} onChange={v => setDcaCfg({ ...dcaCfg, months: Math.round(v) })} min={2} max={60} style={{ color: T.green }} ariaLabel="DCA spread months" />
+              <NumInput value={dcaCfg.months} onChange={v => setDcaCfg({ ...dcaCfg, months: Math.round(v) })} min={2} max={60} style={{ color: T.green }} ariaLabel="DCA spread months" T={T} />
             </div>
           </div>
         )}
@@ -800,13 +807,13 @@ export default function BacktestApp() {
                     <div style={{ flex: 1 }}>
                       <label style={{ fontSize: "0.5rem", color: T.textMuted, fontWeight: 600, textTransform: "uppercase", display: "block", marginBottom: "2px" }}>Drop</label>
                       <NumInput value={tier.dropPct} onChange={v => updateTier(tier.id, "dropPct", v)} min={0} max={100}
-                        style={{ padding: "6px 8px", fontSize: "0.8125rem", color: T.red }} ariaLabel={`Tier ${idx + 1} drop`} />
+                        style={{ padding: "6px 8px", fontSize: "0.8125rem", color: T.red }} ariaLabel={`Tier ${idx + 1} drop`} T={T} />
                     </div>
                     <span style={{ color: T.textMuted, fontSize: "0.75rem", marginTop: "12px" }}>{"\u2192"}</span>
                     <div style={{ flex: 1 }}>
                       <label style={{ fontSize: "0.5rem", color: T.textMuted, fontWeight: 600, textTransform: "uppercase", display: "block", marginBottom: "2px" }}>Deploy</label>
                       <NumInput value={tier.deployPct} onChange={v => updateTier(tier.id, "deployPct", v)} min={0} max={100}
-                        style={{ padding: "6px 8px", fontSize: "0.8125rem", color: T.green }} ariaLabel={`Tier ${idx + 1} deploy`} />
+                        style={{ padding: "6px 8px", fontSize: "0.8125rem", color: T.green }} ariaLabel={`Tier ${idx + 1} deploy`} T={T} />
                     </div>
                   </div>
                   {tiers.length > 1 && (
@@ -827,19 +834,19 @@ export default function BacktestApp() {
         <div>
           {/* Metric cards */}
           <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "repeat(4, 1fr)", gap, marginBottom: gap }}>
-            <MetricCard label="Total Return" value={fmtN(rs.totalReturn) + "%"} color={rs.totalReturn >= 0 ? T.green : T.red} sub={`Injected: ${fmtM(rs.totalInjected)}`} mob={mob} />
-            <MetricCard label="XIRR" value={fmtN(rs.xirr) + "%"} color={rs.xirr >= 0 ? T.green : T.red} sub="Annualised" mob={mob} />
-            <MetricCard label="Final Portfolio" value={fmtM(rs.finalPortfolio)} sub={`${fmtN(rs.years, 1)} yrs`} mob={mob} />
-            <MetricCard label="Trades" value={`${fmtInt(rs.numBuys)}B / ${fmtInt(rs.numSells)}S`} color={T.accent} sub={`${fmtInt(rs.roundTrips)} round trips`} mob={mob} />
+            <MetricCard label="Total Return" value={fmtN(rs.totalReturn) + "%"} color={rs.totalReturn >= 0 ? T.green : T.red} sub={`Injected: ${fmtM(rs.totalInjected)}`} mob={mob} T={T} />
+            <MetricCard label="XIRR" value={fmtN(rs.xirr) + "%"} color={rs.xirr >= 0 ? T.green : T.red} sub="Annualised" mob={mob} T={T} />
+            <MetricCard label="Final Portfolio" value={fmtM(rs.finalPortfolio)} sub={`${fmtN(rs.years, 1)} yrs`} mob={mob} T={T} />
+            <MetricCard label="Trades" value={`${fmtInt(rs.numBuys)}B / ${fmtInt(rs.numSells)}S`} color={T.accent} sub={`${fmtInt(rs.roundTrips)} round trips`} mob={mob} T={T} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap, marginBottom: gap }}>
-            <MetricCard label="Max DD" value={fmtN(rs.maxDD) + "%"} color={T.red} mob={mob} />
-            <MetricCard label="Avg DD" value={fmtN(rs.avgDD) + "%"} color={T.red} mob={mob} />
-            <MetricCard label="Med DD" value={fmtN(rs.medDD) + "%"} color={T.red} mob={mob} />
+            <MetricCard label="Max DD" value={fmtN(rs.maxDD) + "%"} color={T.red} mob={mob} T={T} />
+            <MetricCard label="Avg DD" value={fmtN(rs.avgDD) + "%"} color={T.red} mob={mob} T={T} />
+            <MetricCard label="Med DD" value={fmtN(rs.medDD) + "%"} color={T.red} mob={mob} T={T} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap, marginBottom: gap }}>
-            <MetricCard label="Avg Pos Ret" value={fmtN(rs.avgPR) + "%"} color={rs.avgPR >= 0 ? T.green : T.red} mob={mob} />
-            <MetricCard label="Med Pos Ret" value={fmtN(rs.medPR) + "%"} color={rs.medPR >= 0 ? T.green : T.red} mob={mob} />
+            <MetricCard label="Avg Pos Ret" value={fmtN(rs.avgPR) + "%"} color={rs.avgPR >= 0 ? T.green : T.red} mob={mob} T={T} />
+            <MetricCard label="Med Pos Ret" value={fmtN(rs.medPR) + "%"} color={rs.medPR >= 0 ? T.green : T.red} mob={mob} T={T} />
           </div>
 
           {/* Methodology accordion */}
@@ -879,7 +886,7 @@ export default function BacktestApp() {
             width: "fit-content", maxWidth: "100%",
           }}>
             {[["overview", "Overview"], ["drawdown", "Drawdown"], ["capital", "Capital"], ["trades", "Trades"], ["positions", "Positions"]].map(([id, label]) => (
-              <TabButton key={id} active={activeTab === id} onClick={() => setActiveTab(id)} mob={mob}>{label}</TabButton>
+              <TabButton key={id} active={activeTab === id} onClick={() => setActiveTab(id)} mob={mob} T={T}>{label}</TabButton>
             ))}
           </div>
 
