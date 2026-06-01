@@ -48,63 +48,81 @@
   .site-header {
     background: #0a0c14;
     border-bottom: 2px solid var(--border);
-    padding: 16px 20px 12px;
+    padding: 14px 20px;
     position: sticky;
     top: 0;
     z-index: 100;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
   }
-
-  .site-header .logo {
+  .logo {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    font-size: 1.3rem;
-    color: var(--cbk);
+    font-size: 1.4rem;
+    color: #06b6d4;
     letter-spacing: -0.5px;
     white-space: nowrap;
   }
-
-  .site-header .subtitle {
-    font-size: 0.78rem;
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
     color: var(--dim);
-    font-weight: 300;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
   }
-
-  .header-controls {
+  .ctrl-row {
     margin-left: auto;
     display: flex;
     gap: 8px;
     align-items: center;
   }
-
-  .home-link {
-    font-size: 0.8rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: #7880a0;
-    text-decoration: none;
-    border: 1px solid #22263a;
-    padding: 4px 10px;
-    border-radius: 6px;
-    transition: color 0.15s, border-color 0.15s;
-  }
-  .home-link:hover { color: #e8eaf5; border-color: #b8bdd4; }
-
   .ctrl-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     padding: 4px 10px;
     border-radius: 6px;
-    border: 1px solid #22263a;
-    background: transparent;
-    color: #7880a0;
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
   }
-  .ctrl-btn:hover { color: #e8eaf5; border-color: #b8bdd4; }
+  .ctrl-btn:hover { color: var(--text); border-color: #b8bdd4; }
+  .home-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--dim);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .home-link:hover { color: var(--text); border-color: #b8bdd4; }
+
+  /* ── CCSP inter-page nav ── */
+  .ccsp-nav {
+    display: flex;
+    gap: 6px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #0d0f18;
+  }
+  .ccsp-nav-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    text-decoration: none;
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: color 0.15s;
+  }
+  .ccsp-nav-link:hover { color: var(--text); }
+  .ccsp-nav-link.active { color: var(--text); border-color: var(--border); background: var(--card); }
 
   /* ── Legend ── */
   .legend {
@@ -320,7 +338,7 @@
     th, td { padding: 6px 6px; }
     .td-port { font-size: 0.85rem; }
     .td-notes { font-size: 0.75rem; }
-    .site-header .subtitle { display: none; }
+    .subtitle { display: none; }
     body { overflow-x: auto; }
   }
 </style>
@@ -328,14 +346,20 @@
 <body>
 
 <header class="site-header">
-  <div class="logo">CCSP // PORTS</div>
-  <div class="subtitle">Port & Protocol Reference &nbsp;·&nbsp; All 6 Domains</div>
-  <div class="header-controls">
+  <span class="logo">CCSP</span>
+  <span class="subtitle">PORT &amp; PROTOCOL REFERENCE // ALL DOMAINS</span>
+  <div class="ctrl-row">
     <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
     <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
-    <a class="home-link" href="index.html">⌂ Home</a>
+    <a class="home-link" href="../index.html">⌂ Home</a>
   </div>
 </header>
+
+<nav class="ccsp-nav" aria-label="CCSP pages">
+  <a class="ccsp-nav-link" href="lifecycles.html">Lifecycles</a>
+  <a class="ccsp-nav-link active" href="ports.html">Ports</a>
+  <a class="ccsp-nav-link" href="standards.html">Standards</a>
+</nav>
 
 <div class="legend">
   <span class="legend-label">Source:</span>

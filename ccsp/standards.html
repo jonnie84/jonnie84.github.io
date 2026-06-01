@@ -28,7 +28,7 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { font-size: 18px; }
+  html { font-size: 16px; }
 
   body {
     background: var(--bg);
@@ -51,28 +51,29 @@
     gap: 12px;
     flex-wrap: wrap;
   }
-  .site-header .logo {
+  .logo {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    font-size: 1.7rem;
-    color: var(--iso);
-    letter-spacing: -1px;
+    font-size: 1.4rem;
+    color: #06b6d4;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
   }
-  .site-header .subtitle {
-    font-size: 0.85rem;
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
     color: var(--dim);
-    font-weight: 300;
+    letter-spacing: 0.04em;
   }
-  .header-actions {
+  .ctrl-row {
     margin-left: auto;
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;
   }
   .home-link {
-    font-size: 0.8rem;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
     color: var(--dim);
     text-decoration: none;
     border: 1px solid var(--border);
@@ -80,7 +81,30 @@
     border-radius: 6px;
     transition: color 0.15s, border-color 0.15s;
   }
-  .home-link:hover { color: var(--text); border-color: var(--title-col); }
+  .home-link:hover { color: var(--text); border-color: #b8bdd4; }
+
+  /* ── CCSP inter-page nav ── */
+  .ccsp-nav {
+    display: flex;
+    gap: 6px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #0d0f18;
+  }
+  .ccsp-nav-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    text-decoration: none;
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: color 0.15s;
+  }
+  .ccsp-nav-link:hover { color: var(--text); }
+  .ccsp-nav-link.active { color: var(--text); border-color: var(--border); background: var(--card); }
 
   /* ── TOC ─────────────────────────────────────────────────── */
   .toc {
@@ -279,30 +303,36 @@
 
   /* ── ctrl-btn ────────────────────────────────────────────── */
   .ctrl-btn {
-    font-size: 0.8rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
     padding: 4px 10px;
     border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--dim);
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
   }
-  .ctrl-btn:hover { color: var(--text); border-color: var(--title-col); }
+  .ctrl-btn:hover { color: var(--text); border-color: #b8bdd4; }
 </style>
 </head>
 <body>
 
 <header class="site-header">
   <span class="logo">CCSP</span>
-  <span class="subtitle">Standards &amp; Frameworks Reference</span>
-  <div class="header-actions">
+  <span class="subtitle">STANDARDS &amp; FRAMEWORKS REFERENCE</span>
+  <div class="ctrl-row">
     <button class="ctrl-btn" onclick="setAll(false)">Expand all</button>
     <button class="ctrl-btn" onclick="setAll(true)">Collapse all</button>
-    <a class="home-link" href="index.html">⌂ Home</a>
+    <a class="home-link" href="../index.html">⌂ Home</a>
   </div>
 </header>
+
+<nav class="ccsp-nav" aria-label="CCSP pages">
+  <a class="ccsp-nav-link" href="lifecycles.html">Lifecycles</a>
+  <a class="ccsp-nav-link" href="ports.html">Ports</a>
+  <a class="ccsp-nav-link active" href="standards.html">Standards</a>
+</nav>
 
 <nav class="toc">
   <a class="toc-pill cat-iso"   href="#iso">ISO/IEC</a>
