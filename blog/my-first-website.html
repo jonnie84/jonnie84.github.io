@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My First Website — Jon's Site</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root[data-theme="dark"] {
+    --bg: oklch(0.165 0.012 256);
+    --bg-2: oklch(0.205 0.014 256);
+    --bg-3: oklch(0.255 0.016 256);
+    --text: oklch(0.945 0.006 256);
+    --text-soft: oklch(0.70 0.012 256);
+    --text-faint: oklch(0.54 0.012 256);
+    --line: oklch(0.95 0.006 256 / 0.10);
+    --line-2: oklch(0.95 0.006 256 / 0.05);
+    --accent: oklch(0.76 0.13 308);
+    --accent-dim: oklch(0.76 0.13 308 / 0.14);
+    --glow: oklch(0.76 0.13 308 / 0.28);
+  }
+  :root[data-theme="light"] {
+    --bg: oklch(0.985 0.004 256);
+    --bg-2: oklch(0.97 0.005 256);
+    --bg-3: oklch(0.93 0.007 256);
+    --text: oklch(0.22 0.014 256);
+    --text-soft: oklch(0.44 0.013 256);
+    --text-faint: oklch(0.60 0.012 256);
+    --line: oklch(0.22 0.014 256 / 0.13);
+    --line-2: oklch(0.22 0.014 256 / 0.06);
+    --accent: oklch(0.55 0.16 305);
+    --accent-dim: oklch(0.55 0.16 305 / 0.10);
+    --glow: oklch(0.55 0.16 305 / 0.18);
+  }
+
+  :root {
+    --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+    --display: "Sora", "Geist", sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --maxw: 680px;
+    --gutter: clamp(20px, 5vw, 56px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+    overflow-x: hidden;
+    transition: background .4s ease, color .4s ease;
+  }
+
+  ::selection { background: var(--accent); color: var(--bg); }
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
+
+  /* NAV */
+  header {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in oklch, var(--bg) 80%, transparent);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease;
+  }
+  header.scrolled { border-bottom-color: var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 11px; font-family: var(--display); font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+  .brand .mark {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--accent); color: var(--bg);
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    box-shadow: 0 0 18px var(--glow);
+  }
+  .back-link {
+    font-family: var(--mono); font-size: 13px; color: var(--text-faint);
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 13px; border-radius: 8px;
+    border: 1px solid var(--line);
+    transition: color .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .back-link:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
+  .nav-tools { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 9px;
+    border: 1px solid var(--line); background: var(--bg-2);
+    color: var(--text-soft); cursor: pointer;
+    display: grid; place-items: center;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+  .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .icon-btn svg { width: 17px; height: 17px; }
+
+  /* ARTICLE */
+  .article-wrap { padding-block: clamp(48px, 8vw, 88px) clamp(72px, 10vw, 112px); }
+
+  .post-meta {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .post-date {
+    font-family: var(--mono); font-size: 13px; color: var(--text-faint);
+  }
+  .post-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border: 1px solid var(--accent-dim); padding: 2px 8px; border-radius: 100px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 36px;
+    text-wrap: balance;
+  }
+
+  .divider {
+    width: 40px; height: 2px;
+    background: var(--accent); opacity: 0.5;
+    border-radius: 2px; margin-bottom: 36px;
+  }
+
+  .prose p {
+    font-size: clamp(17px, 2vw, 19px);
+    line-height: 1.75;
+    color: var(--text-soft);
+    margin-bottom: 1.5em;
+  }
+  .prose p:last-child { margin-bottom: 0; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding-block: clamp(32px, 5vw, 56px); }
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .colophon { font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <div class="wrap nav">
+    <a href="../index.html" class="brand"><span class="mark">~</span>Jon</a>
+    <div class="nav-tools">
+      <a href="../index.html" class="back-link">← Home</a>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+        <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="article-wrap wrap">
+    <div class="post-meta">
+      <span class="post-date">1 Jun 2026</span>
+      <span class="post-tag">Personal</span>
+    </div>
+    <h1>My First Website</h1>
+    <div class="divider"></div>
+    <div class="prose">
+      <p>So I built my first website. I originally wanted to have something easy for me to refer to my CCSP notes. One thing led to another, and now I have my own domain and website, with my vibe coded apps on it too.</p>
+      <p>I'm thinking to see what I can do with this website using help with Claude. Watch this space for developments.</p>
+      <p>Well, not that anyone will be seeing this except myself, I guess. &gt;.&lt;</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span class="colophon">© 2026 Jonathan Goh — built with Claude</span>
+  </div>
+</footer>
+
+<script>
+  const SUN = '<circle cx="12" cy="12" r="4.2"></circle><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"></path>';
+  const MOON = '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.2 6.2 0 0 0 10.5 10.5z"></path>';
+  const root = document.documentElement;
+  const icon = document.getElementById('theme-icon');
+  function applyTheme(mode) {
+    root.setAttribute('data-theme', mode);
+    icon.innerHTML = mode === 'dark' ? MOON : SUN;
+    try { localStorage.setItem('site-theme', mode); } catch (e) {}
+  }
+  let saved = 'dark';
+  try { saved = localStorage.getItem('site-theme') || 'dark'; } catch (e) {}
+  applyTheme(saved);
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  const header = document.getElementById('site-header');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+</body>
+</html>
