@@ -675,6 +675,7 @@ function EditorScreen({ onBack, onPlay, onSave, T, dark, setDark }) {
       <div style={{display:"flex",alignItems:"center",marginBottom:14}}>
         <button onClick={onBack} style={{...btn,backgroundColor:card,color:textDim,padding:"6px 12px",marginRight:10}}>🎮 Game Mode</button>
         <div style={{flex:1,textAlign:"center",fontSize:"1rem",fontWeight:800}}>🛠 Board Editor</div>
+        <a href="../../" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,border:`1px solid ${border}`,background:card,color:textMuted,fontSize:12,fontFamily:"inherit",textDecoration:"none",marginRight:8}}>⌂ Home</a>
         <button onClick={()=>setDark(d=>!d)} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,border:`1px solid ${border}`,background:card,color:textMuted,fontSize:12,fontFamily:"inherit",cursor:"pointer"}}>{dark?"☀ Light":"☾ Dark"}</button>
       </div>
 
