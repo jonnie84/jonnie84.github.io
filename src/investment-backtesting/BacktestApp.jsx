@@ -420,6 +420,7 @@ function StrategyButton({ active, onClick, label, desc, isBench, mob, T }) {
    MAIN COMPONENT
    ═══════════════════════════════════════════ */
 export default function BacktestApp() {
+  document.title = 'Investment Backtester';
   const [mob, setMob] = useState(false);
   useEffect(() => {
     const check = () => setMob(window.innerWidth < 768);

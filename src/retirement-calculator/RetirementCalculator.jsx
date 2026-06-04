@@ -44,6 +44,7 @@ const SectionHeader = ({ icon, title, T }) => (
 );
 
 export default function RetirementCalculator() {
+  document.title = 'Retirement Calculator';
   const [dark, setDark] = useState(true);
 
   const T = {

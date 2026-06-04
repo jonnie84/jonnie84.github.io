@@ -318,6 +318,7 @@ function astAltRisk(r) { if (!r) return null; if (r < 0.8) return { ...RISK.low,
 
 /* ── main ── */
 export default function HealthAssessment() {
+  document.title = 'Health Assessment';
   const [dark, setDark] = useState(true);
 
   const T = {

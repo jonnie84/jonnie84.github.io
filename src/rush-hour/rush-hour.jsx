@@ -880,6 +880,7 @@ function getRating(moves,par){
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 export default function RushHourApp() {
+  document.title = 'Rush Hour Solver';
   const [dark, setDark]              = useState(true);
 
   const T = {

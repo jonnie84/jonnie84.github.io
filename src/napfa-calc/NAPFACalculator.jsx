@@ -336,6 +336,7 @@ function ThresholdTable({ stationKey, thresholds, lowerBetter, formatTick, T }) 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
 export default function NAPFACalculator() {
+  document.title = 'NAPFA Calculator';
   const [dark, setDark] = useState(true);
 
   const T = {

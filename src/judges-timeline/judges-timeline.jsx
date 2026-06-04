@@ -271,6 +271,7 @@ const categoryColors = {
 };
 
 export default function JudgesTimeline() {
+  document.title = 'Judges Timeline';
   const [dark, setDark] = useState(true);
   const [selected, setSelected] = useState(null);
   const [showCycle, setShowCycle] = useState(false);

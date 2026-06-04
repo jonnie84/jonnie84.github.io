@@ -40,6 +40,7 @@ const VOCAB = [
 ];
 
 export default function QuadraticExplorer() {
+  document.title = 'Quadratic Graph Explorer';
   const [dark, setDark] = useState(true);
 
   const T = {
