@@ -79,28 +79,66 @@
 <script type="text/javascript" nonce="bbf36ec574fa48628cbdb7d634a" src="//local.adguard.org?ts=1778936159593&amp;type=content-script&amp;dmn=claude.ai&amp;url=https%3A%2F%2Fclaude.ai%2Fdesign%2Fv1%2Fdesign%2Fprojects%2F019e29b1-a543-7774-8834-2ebe5c6939a7%2Fdownload%3Fpath%3DPrompting%2520Cheat%2520Sheet.html&amp;app=chrome.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="bbf36ec574fa48628cbdb7d634a" src="//local.adguard.org?ts=1778936159593&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
 <body>
 
-  <nav id="site-nav">
-    <a href="../" class="nav-btn">⌂ Home</a>
-    <button id="theme-toggle" class="nav-btn" aria-label="Toggle theme">☾ Dark</button>
-  </nav>
-
   <script>
     (function() {
       var saved = 'dark';
       try { saved = localStorage.getItem('prompting-theme') || 'dark'; } catch(e) {}
-      document.documentElement.setAttribute('data-theme', saved);
-      document.addEventListener('DOMContentLoaded', function() {
+
+      var NAV_CSS = [
+        '#site-nav{position:fixed;top:0;left:0;right:0;z-index:10001;height:52px;display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:0 16px;background:color-mix(in srgb,#0d0e10 85%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #2a2e35;transition:background .3s,border-color .3s}',
+        '.nav-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;border:1px solid #2a2e35;background:#16181c;color:#7f7c75;font-size:12px;font-family:ui-monospace,"SF Mono",Menlo,monospace;cursor:pointer;text-decoration:none;transition:color .2s,border-color .2s,background .2s}',
+        '.nav-btn:hover{color:#f0eee9;border-color:#56544f}',
+        'body{padding-top:52px!important}',
+        'html[data-theme="light"]{--bg:#f7f6f3;--bg-card:#ffffff;--bg-card-2:#f0ede8;--bg-elev:#e8e4de;--line:#d8d4cc;--line-2:#c8c3ba;--ink:#1a1916;--ink-2:#4a4740;--ink-3:#7a776f;--ink-4:#aaa79f;--c1-soft:oklch(55% 0.13 70/.12);--c2-soft:oklch(45% 0.13 180/.12);--c3-soft:oklch(50% 0.13 300/.12);--c4-soft:oklch(45% 0.13 145/.12);--c5-soft:oklch(55% 0.13 30/.12);--c6-soft:oklch(50% 0.13 240/.12);--c1:oklch(50% 0.16 70);--c2:oklch(40% 0.16 180);--c3:oklch(45% 0.16 300);--c4:oklch(40% 0.16 145);--c5:oklch(50% 0.16 30);--c6:oklch(45% 0.16 240)}',
+        'html[data-theme="light"] body{background:#f7f6f3!important}',
+        'html[data-theme="light"] #site-nav{background:color-mix(in srgb,#f7f6f3 88%,transparent);border-bottom-color:#d8d4cc}',
+        'html[data-theme="light"] .nav-btn{border-color:#d8d4cc;background:#fff;color:#7a776f}',
+        'html[data-theme="light"] .nav-btn:hover{color:#1a1916;border-color:#aaa79f}'
+      ].join('');
+
+      function injectNav() {
+        // Inject CSS into the new document's head
+        var style = document.createElement('style');
+        style.id = 'site-nav-style';
+        style.textContent = NAV_CSS;
+        document.head.appendChild(style);
+
+        // Apply saved theme
+        document.documentElement.setAttribute('data-theme', saved);
+
+        // Inject navbar at top of body
+        var nav = document.createElement('nav');
+        nav.id = 'site-nav';
+        nav.innerHTML =
+          '<a href="../" class="nav-btn">⌂ Home</a>' +
+          '<button id="theme-toggle" class="nav-btn" aria-label="Toggle theme">☾ Dark</button>';
+        document.body.insertBefore(nav, document.body.firstChild);
+
+        // Wire up toggle
         var btn = document.getElementById('theme-toggle');
-        if (!btn) return;
-        function updateBtn(mode) { btn.textContent = mode === 'dark' ? '☾ Dark' : '☀ Light'; }
+        function updateBtn(m) { btn.textContent = m === 'dark' ? '☾ Dark' : '☀ Light'; }
         updateBtn(saved);
         btn.addEventListener('click', function() {
           var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', next);
+          saved = next;
           try { localStorage.setItem('prompting-theme', next); } catch(e) {}
           updateBtn(next);
         });
+      }
+
+      // The bundler calls document.documentElement.replaceWith(...), which is a
+      // childList mutation on document itself. Observing document lets us detect
+      // that swap and re-inject after the new <html> is in place.
+      var observer = new MutationObserver(function() {
+        observer.disconnect();
+        if (document.body) {
+          injectNav();
+        } else {
+          document.addEventListener('DOMContentLoaded', injectNav);
+        }
       });
+      observer.observe(document, { childList: true });
     })();
   </script>
 
