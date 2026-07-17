@@ -401,6 +401,15 @@ export default function CongkakGame() {
   const [darkMode, setDarkMode] = useState(true);
   const theme = darkMode ? THEMES.dark : THEMES.light;
 
+  // shared pill style for the ⌂ Home link and ☀/☾ toggle, matching the other apps on the site
+  const headerBtnStyle = {
+    display: 'inline-flex', alignItems: 'center', gap: 6,
+    padding: '5px 12px', borderRadius: 8,
+    border: `1px solid ${theme.border}`, background: theme.surface,
+    color: theme.textMuted, fontSize: 12, fontFamily: 'inherit',
+    textDecoration: 'none', cursor: 'pointer',
+  };
+
   const [phase, setPhase] = useState('setup'); // setup, playing, gameover
   const [seedsPerHole, setSeedsPerHole] = useState('7');
   const [mode, setMode] = useState('2p'); // 2p, cpu
@@ -569,14 +578,16 @@ export default function CongkakGame() {
         <div className="w-full max-w-md rounded-2xl p-6 md:p-8" style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}` }}>
           <div className="flex items-start justify-between mb-1">
             <h1 className="text-2xl font-bold" style={{ color: theme.textPrimary }}>Congkak</h1>
-            <button
-              onClick={() => setDarkMode(d => !d)}
-              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="h-9 px-3 rounded-lg text-xs font-medium focus:outline-none focus:ring-2"
-              style={{ backgroundColor: theme.surfaceAlt, color: theme.textSecondary, border: `1px solid ${theme.borderLight}` }}
-            >
-              {darkMode ? '☀ Light' : '☾ Dark'}
-            </button>
+            <div className="flex gap-2">
+              <a href="../../" style={headerBtnStyle}>⌂ Home</a>
+              <button
+                onClick={() => setDarkMode(d => !d)}
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                style={headerBtnStyle}
+              >
+                {darkMode ? '☀ Light' : '☾ Dark'}
+              </button>
+            </div>
           </div>
           <p className="text-sm mb-6" style={{ color: theme.textSecondary }}>7 holes per side · clockwise sowing · stores on the left</p>
 
@@ -694,14 +705,14 @@ export default function CongkakGame() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold" style={{ color: theme.textPrimary }}>Congkak</h1>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <a href="../../" style={headerBtnStyle}>⌂ Home</a>
             <button
               onClick={() => setDarkMode(d => !d)}
               aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="h-10 px-3 rounded-lg text-sm font-medium focus:outline-none focus:ring-2"
-              style={{ backgroundColor: theme.surfaceAlt, color: theme.textSecondary, border: `1px solid ${theme.borderLight}` }}
+              style={headerBtnStyle}
             >
-              {darkMode ? '☀' : '☾'}
+              {darkMode ? '☀ Light' : '☾ Dark'}
             </button>
             <button
               onClick={undo}
