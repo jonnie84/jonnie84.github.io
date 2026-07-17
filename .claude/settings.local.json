@@ -14,7 +14,15 @@
       "Bash(bash /tmp/uv-install.sh)",
       "Read(//c/c/Users/user3/OneDrive/Documents/GitHub/jonnie84.github.io/**)",
       "WebSearch",
-      "Bash(ls -la ~/.claude/)"
+      "Bash(ls -la ~/.claude/)",
+      "Bash(cat \"C:\\\\Users\\\\jonny\\\\.claude\\\\projects\\\\C--Users-jonny-OneDrive-Documents-GitHub-jonnie84-github-io\\\\memory\\\\MEMORY.md\" 2>/dev/null; echo ---; ls \"C:\\\\Users\\\\jonny\\\\.claude\\\\projects\\\\C--Users-jonny-OneDrive-Documents-GitHub-jonnie84-github-io\\\\memory\" 2>/dev/null; echo ---; ls \"C:\\\\Users\\\\jonny\\\\OneDrive\\\\Documents\\\\GitHub\" ; echo ---; ls \"C:\\\\Users\\\\jonny\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io\\\\.claude\" 2>/dev/null; cat \"C:\\\\Users\\\\jonny\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io\\\\CLAUDE.md\" 2>/dev/null)",
+      "Bash(ls \"C:\\\\Users\\\\jonny\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io\" -la; ls /c/Users/jonny/OneDrive/Documents/GitHub -la; ls /c/Users/jonny -la | grep -iE \"convert|vite|dev|proj\" ; ls /c/Users/jonny/OneDrive/Documents | head -40)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
