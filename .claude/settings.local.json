@@ -22,7 +22,8 @@
       "Bash(npm run *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(cp 'C:\\\\Users\\\\jonny\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io/src/congkak/congkak.jsx' 'C:\\\\Users\\\\jonny\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-jonny-OneDrive-Documents-GitHub-jonnie84-github-io\\\\87ec432d-e891-4312-833f-4f59609ebe40\\\\scratchpad\\\\congkak-build/src/congkak.jsx')"
     ]
   }
 }
