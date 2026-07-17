@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\user3\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io\\\\src\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\user3\\\\OneDrive\\\\Documents\\\\GitHub\\\\jonnie84.github.io\" -Recurse -File | Where-Object { $_.Extension -match '\\\\.\\(css|jsx|js\\)$' } | Select-Object FullName | Sort-Object FullName)",
+      "Bash(ls -la ~/.claude/skills 2>/dev/null || echo \"no skills dir yet\")",
+      "Bash(rm -rf hyperframes remotion)",
+      "Bash(du -sh .)",
+      "Bash(rm -rf last30days-skill)",
+      "Bash(rm -rf taste-skill)",
+      "Bash(mv taste-skill-main *)",
+      "Bash(du -sh . */)",
+      "Bash(curl -LsSf https://astral.sh/uv/install.sh -o /tmp/uv-install.sh)",
+      "Bash(bash /tmp/uv-install.sh)",
+      "Read(//c/c/Users/user3/OneDrive/Documents/GitHub/jonnie84.github.io/**)",
+      "WebSearch",
+      "Bash(ls -la ~/.claude/)"
+    ]
+  }
+}
